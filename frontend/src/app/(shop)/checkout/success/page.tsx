@@ -10,12 +10,14 @@ import { Separator } from '@/components/ui/separator'
 import { api } from '@/lib/api'
 import { Order } from '@/types'
 import { formatPrice, formatDate } from '@/lib/utils'
+import { useSettingsStore } from '@/stores/settings.store'
 
 export default function CheckoutSuccessPage() {
   const searchParams = useSearchParams()
   const orderId = searchParams.get('orderId')
   const [order, setOrder] = useState<Order | null>(null)
   const [loading, setLoading] = useState(true)
+  const { t } = useSettingsStore()
 
   useEffect(() => {
     async function fetchOrder() {
@@ -51,9 +53,9 @@ export default function CheckoutSuccessPage() {
   if (!order) {
     return (
       <div className="container py-16 text-center">
-        <h1 className="text-2xl font-bold mb-4">Order not found</h1>
+        <h1 className="text-2xl font-bold mb-4">{t('orderNotFound')}</h1>
         <Button asChild>
-          <Link href="/">Go to Home</Link>
+          <Link href="/">{t('goToHome')}</Link>
         </Button>
       </div>
     )
@@ -63,32 +65,32 @@ export default function CheckoutSuccessPage() {
     <div className="container py-16 max-w-2xl">
       <div className="text-center mb-8">
         <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-4" />
-        <h1 className="text-3xl font-bold mb-2">Thank you for your order!</h1>
+        <h1 className="text-3xl font-bold mb-2">{t('thankYouOrder')}</h1>
         <p className="text-muted-foreground">
-          We&apos;ve received your order and will send you a confirmation email shortly.
+          {t('orderConfirmationEmail')}
         </p>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>Order Details</CardTitle>
+          <CardTitle>{t('orderDetails')}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div>
-              <p className="text-muted-foreground">Order Number</p>
+              <p className="text-muted-foreground">{t('orderNumber')}</p>
               <p className="font-medium">{order.orderNumber}</p>
             </div>
             <div>
-              <p className="text-muted-foreground">Date</p>
+              <p className="text-muted-foreground">{t('date')}</p>
               <p className="font-medium">{formatDate(order.createdAt)}</p>
             </div>
             <div>
-              <p className="text-muted-foreground">Email</p>
+              <p className="text-muted-foreground">{t('email')}</p>
               <p className="font-medium">{order.customerEmail}</p>
             </div>
             <div>
-              <p className="text-muted-foreground">Status</p>
+              <p className="text-muted-foreground">{t('status')}</p>
               <p className="font-medium capitalize">{order.status.toLowerCase()}</p>
             </div>
           </div>
@@ -96,7 +98,7 @@ export default function CheckoutSuccessPage() {
           <Separator />
 
           <div>
-            <h3 className="font-semibold mb-2">Shipping Address</h3>
+            <h3 className="font-semibold mb-2">{t('shippingAddress')}</h3>
             <p className="text-muted-foreground">
               {order.customerName}
               <br />
@@ -111,7 +113,7 @@ export default function CheckoutSuccessPage() {
           <Separator />
 
           <div>
-            <h3 className="font-semibold mb-4">Items</h3>
+            <h3 className="font-semibold mb-4">{t('items')}</h3>
             <div className="space-y-2">
               {order.items.map((item) => (
                 <div key={item.id} className="flex justify-between">
@@ -128,20 +130,20 @@ export default function CheckoutSuccessPage() {
 
           <div className="space-y-2">
             <div className="flex justify-between">
-              <span>Subtotal</span>
+              <span>{t('subtotal')}</span>
               <span>{formatPrice(order.subtotal)}</span>
             </div>
             <div className="flex justify-between">
-              <span>Shipping</span>
+              <span>{t('shipping')}</span>
               <span>
                 {Number(order.shippingCost) === 0
-                  ? 'Free'
+                  ? t('free')
                   : formatPrice(order.shippingCost)}
               </span>
             </div>
             <Separator />
             <div className="flex justify-between font-bold text-lg">
-              <span>Total</span>
+              <span>{t('total')}</span>
               <span>{formatPrice(order.total)}</span>
             </div>
           </div>
@@ -150,7 +152,7 @@ export default function CheckoutSuccessPage() {
 
       <div className="flex justify-center mt-8">
         <Button asChild>
-          <Link href="/products">Continue Shopping</Link>
+          <Link href="/products">{t('continueShoppingBtn')}</Link>
         </Button>
       </div>
     </div>

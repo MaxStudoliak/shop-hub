@@ -19,6 +19,7 @@ import { PlusOutlined, DeleteOutlined, ArrowLeftOutlined } from '@ant-design/ico
 import type { UploadFile } from 'antd/es/upload/interface'
 import { adminApi } from '@/lib/api'
 import { Category, Product } from '@/types'
+import { useSettingsStore } from '@/stores/settings.store'
 
 const { TextArea } = Input
 
@@ -28,6 +29,7 @@ interface ProductFormProps {
 
 export default function ProductFormPage({ params }: ProductFormProps) {
   const isNew = params.id === 'new'
+  const { t } = useSettingsStore()
   const [form] = Form.useForm()
   const router = useRouter()
   const [loading, setLoading] = useState(!isNew)
@@ -48,7 +50,7 @@ export default function ProductFormPage({ params }: ProductFormProps) {
       const { data } = await adminApi.get('/categories')
       setCategories(data)
     } catch {
-      message.error('Failed to fetch categories')
+      message.error(t('failedToFetch'))
     }
   }
 
@@ -67,7 +69,7 @@ export default function ProductFormPage({ params }: ProductFormProps) {
       })
       setImageUrls(data.images.map((img: { url: string }) => img.url))
     } catch {
-      message.error('Failed to fetch product')
+      message.error(t('failedToFetch'))
       router.push('/admin/products')
     } finally {
       setLoading(false)
@@ -89,10 +91,10 @@ export default function ProductFormPage({ params }: ProductFormProps) {
       })
       setImageUrls((prev) => [...prev, data.url])
       onSuccess(data)
-      message.success('Image uploaded')
+      message.success(t('imageUploaded'))
     } catch {
       onError(new Error('Upload failed'))
-      message.error('Failed to upload image')
+      message.error(t('failedToUpload'))
     } finally {
       setUploading(false)
     }
@@ -112,14 +114,14 @@ export default function ProductFormPage({ params }: ProductFormProps) {
 
       if (isNew) {
         await adminApi.post('/products', payload)
-        message.success('Product created')
+        message.success(t('productCreated'))
       } else {
         await adminApi.put(`/products/${params.id}`, payload)
-        message.success('Product updated')
+        message.success(t('productUpdated'))
       }
       router.push('/admin/products')
     } catch (error: any) {
-      message.error(error.response?.data?.error || 'Failed to save product')
+      message.error(error.response?.data?.error || t('failedToSave'))
     } finally {
       setSaving(false)
     }
@@ -140,12 +142,12 @@ export default function ProductFormPage({ params }: ProductFormProps) {
           icon={<ArrowLeftOutlined />}
           onClick={() => router.push('/admin/products')}
         >
-          Back to Products
+          {t('backToProducts')}
         </Button>
       </div>
 
       <h1 style={{ fontSize: 24, fontWeight: 'bold', marginBottom: 24 }}>
-        {isNew ? 'Add Product' : 'Edit Product'}
+        {isNew ? t('addProduct') : t('editProduct')}
       </h1>
 
       <Form
@@ -159,36 +161,36 @@ export default function ProductFormPage({ params }: ProductFormProps) {
       >
         <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 24 }}>
           <div>
-            <Card title="Basic Information">
+            <Card title={t('basicInformation')}>
               <Form.Item
                 name="name"
-                label="Product Name"
-                rules={[{ required: true, message: 'Please enter product name' }]}
+                label={t('productName')}
+                rules={[{ required: true, message: t('pleaseEnterProductName') }]}
               >
-                <Input placeholder="Enter product name" />
+                <Input placeholder={t('enterProductName')} />
               </Form.Item>
 
               <Form.Item
                 name="description"
-                label="Description"
-                rules={[{ required: true, message: 'Please enter description' }]}
+                label={t('description')}
+                rules={[{ required: true, message: t('pleaseEnterDescription') }]}
               >
-                <TextArea rows={4} placeholder="Enter product description" />
+                <TextArea rows={4} placeholder={t('enterDescription')} />
               </Form.Item>
 
               <Form.Item
                 name="categoryId"
-                label="Category"
-                rules={[{ required: true, message: 'Please select a category' }]}
+                label={t('category')}
+                rules={[{ required: true, message: t('pleaseSelectCategory') }]}
               >
                 <Select
-                  placeholder="Select category"
+                  placeholder={t('selectCategory')}
                   options={categories.map((c) => ({ label: c.name, value: c.id }))}
                 />
               </Form.Item>
             </Card>
 
-            <Card title="Images" style={{ marginTop: 24 }}>
+            <Card title={t('images')} style={{ marginTop: 24 }}>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
                 {imageUrls.map((url, idx) => (
                   <div key={idx} style={{ position: 'relative' }}>
@@ -238,11 +240,11 @@ export default function ProductFormPage({ params }: ProductFormProps) {
           </div>
 
           <div>
-            <Card title="Pricing">
+            <Card title={t('pricing')}>
               <Form.Item
                 name="price"
-                label="Price"
-                rules={[{ required: true, message: 'Please enter price' }]}
+                label={t('price')}
+                rules={[{ required: true, message: t('pleaseEnterPrice') }]}
               >
                 <InputNumber
                   prefix="$"
@@ -252,7 +254,7 @@ export default function ProductFormPage({ params }: ProductFormProps) {
                 />
               </Form.Item>
 
-              <Form.Item name="comparePrice" label="Compare at Price">
+              <Form.Item name="comparePrice" label={t('compareAtPrice')}>
                 <InputNumber
                   prefix="$"
                   style={{ width: '100%' }}
@@ -262,16 +264,16 @@ export default function ProductFormPage({ params }: ProductFormProps) {
               </Form.Item>
             </Card>
 
-            <Card title="Inventory" style={{ marginTop: 24 }}>
-              <Form.Item name="sku" label="SKU">
-                <Input placeholder="Enter SKU" />
+            <Card title={t('inventory')} style={{ marginTop: 24 }}>
+              <Form.Item name="sku" label={t('sku')}>
+                <Input placeholder={t('enterSku')} />
               </Form.Item>
 
-              <Form.Item name="stock" label="Stock Quantity">
+              <Form.Item name="stock" label={t('stockQuantity')}>
                 <InputNumber style={{ width: '100%' }} min={0} />
               </Form.Item>
 
-              <Form.Item name="status" label="Status">
+              <Form.Item name="status" label={t('status')}>
                 <Select
                   options={[
                     { label: 'Active', value: 'ACTIVE' },
@@ -291,13 +293,13 @@ export default function ProductFormPage({ params }: ProductFormProps) {
                   block
                   size="large"
                 >
-                  {isNew ? 'Create Product' : 'Update Product'}
+                  {isNew ? t('createProduct') : t('updateProduct')}
                 </Button>
                 <Button
                   block
                   onClick={() => router.push('/admin/products')}
                 >
-                  Cancel
+                  {t('cancel')}
                 </Button>
               </Space>
             </Card>

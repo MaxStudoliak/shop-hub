@@ -20,7 +20,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { useCartStore } from '@/stores/cart.store'
 import { useUserStore } from '@/stores/user.store'
-import { useSettingsStore } from '@/stores/settings.store'
+import { useSettingsStore, Currency, currencySymbols } from '@/stores/settings.store'
 import { CartSheet } from './cart-sheet'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
@@ -41,7 +41,7 @@ export function Header() {
   const [mounted, setMounted] = useState(false)
   const totalItems = useCartStore((state) => state.getTotalItems())
   const { user, isAuthenticated, logout } = useUserStore()
-  const { theme, toggleTheme, language, setLanguage, t } = useSettingsStore()
+  const { theme, toggleTheme, language, setLanguage, currency, setCurrency, t } = useSettingsStore()
   const [search, setSearch] = useState('')
   const router = useRouter()
 
@@ -70,15 +70,23 @@ export function Header() {
             <span className="text-xl font-bold">Shop-Hub</span>
           </Link>
           <nav className="hidden lg:flex gap-4 items-center">
-            <Link
-              href="/products"
-              className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-            >
-              {mounted ? t('allProducts') : 'All Products'}
-            </Link>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm" className="text-sm font-medium text-muted-foreground hover:text-foreground">
+                <Button variant="ghost" size="sm" className="text-sm font-medium text-muted-foreground hover:text-white">
+                  {mounted ? t('allProducts') : 'All Products'}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="w-56">
+                <DropdownMenuItem asChild>
+                  <Link href="/products">
+                    {mounted ? t('allProducts') : 'All Products'}
+                  </Link>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm" className="text-sm font-medium text-muted-foreground hover:text-white">
                   {mounted ? t('category') : 'Categories'}
                 </Button>
               </DropdownMenuTrigger>
@@ -124,6 +132,26 @@ export function Header() {
                   className={language === lang ? 'bg-accent' : ''}
                 >
                   {languages[lang]}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          {/* Currency Switcher */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="sm" className="text-sm font-medium">
+                {mounted ? currencySymbols[currency] : '₴'}
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              {(Object.keys(currencySymbols) as Currency[]).map((curr) => (
+                <DropdownMenuItem
+                  key={curr}
+                  onClick={() => setCurrency(curr)}
+                  className={currency === curr ? 'bg-accent' : ''}
+                >
+                  {currencySymbols[curr]} {curr}
                 </DropdownMenuItem>
               ))}
             </DropdownMenuContent>

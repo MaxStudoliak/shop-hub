@@ -22,9 +22,10 @@ import {
 } from '@ant-design/icons'
 import { adminApi } from '@/lib/api'
 import { Product, Category, Pagination } from '@/types'
-import { formatPrice } from '@/lib/utils'
+import { useSettingsStore } from '@/stores/settings.store'
 
 export default function ProductsPage() {
+  const { t, formatPrice } = useSettingsStore()
   const [products, setProducts] = useState<Product[]>([])
   const [categories, setCategories] = useState<Category[]>([])
   const [pagination, setPagination] = useState<Pagination>({
@@ -88,7 +89,7 @@ export default function ProductsPage() {
 
   const columns = [
     {
-      title: 'Image',
+      title: t('image'),
       key: 'image',
       width: 80,
       render: (_: unknown, record: Product) => (
@@ -114,24 +115,24 @@ export default function ProductsPage() {
       ),
     },
     {
-      title: 'Name',
+      title: t('name'),
       dataIndex: 'name',
       key: 'name',
       ellipsis: true,
     },
     {
-      title: 'Category',
+      title: t('category'),
       key: 'category',
       render: (_: unknown, record: Product) => record.category?.name,
     },
     {
-      title: 'Price',
+      title: t('price'),
       dataIndex: 'price',
       key: 'price',
       render: (price: number) => formatPrice(price),
     },
     {
-      title: 'Stock',
+      title: t('stock'),
       dataIndex: 'stock',
       key: 'stock',
       render: (stock: number) => (
@@ -141,7 +142,7 @@ export default function ProductsPage() {
       ),
     },
     {
-      title: 'Status',
+      title: t('status'),
       dataIndex: 'status',
       key: 'status',
       render: (status: string) => {
@@ -154,7 +155,7 @@ export default function ProductsPage() {
       },
     },
     {
-      title: 'Actions',
+      title: t('actions'),
       key: 'actions',
       width: 120,
       render: (_: unknown, record: Product) => (
@@ -163,10 +164,10 @@ export default function ProductsPage() {
             <Button icon={<EditOutlined />} size="small" />
           </Link>
           <Popconfirm
-            title="Delete this product?"
+            title={t('deleteProduct')}
             onConfirm={() => handleDelete(record.id)}
-            okText="Yes"
-            cancelText="No"
+            okText={t('yes')}
+            cancelText={t('no')}
           >
             <Button icon={<DeleteOutlined />} size="small" danger />
           </Popconfirm>
@@ -185,10 +186,10 @@ export default function ProductsPage() {
           marginBottom: 24,
         }}
       >
-        <h1 style={{ fontSize: 24, fontWeight: 'bold', margin: 0 }}>Products</h1>
+        <h1 style={{ fontSize: 24, fontWeight: 'bold', margin: 0 }}>{t('products')}</h1>
         <Link href="/admin/products/new">
           <Button type="primary" icon={<PlusOutlined />}>
-            Add Product
+            {t('addProduct')}
           </Button>
         </Link>
       </div>
@@ -196,7 +197,7 @@ export default function ProductsPage() {
       <Card style={{ marginBottom: 16 }}>
         <Space wrap>
           <Input
-            placeholder="Search products..."
+            placeholder={t('searchPlaceholder')}
             prefix={<SearchOutlined />}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -204,7 +205,7 @@ export default function ProductsPage() {
             style={{ width: 250 }}
           />
           <Select
-            placeholder="Status"
+            placeholder={t('status')}
             allowClear
             value={statusFilter || undefined}
             onChange={(value) => setStatusFilter(value || '')}
@@ -216,7 +217,7 @@ export default function ProductsPage() {
             ]}
           />
           <Select
-            placeholder="Category"
+            placeholder={t('category')}
             allowClear
             value={categoryFilter || undefined}
             onChange={(value) => setCategoryFilter(value || '')}
@@ -224,7 +225,7 @@ export default function ProductsPage() {
             options={categories.map((c) => ({ label: c.name, value: c.id }))}
           />
           <Button type="primary" onClick={handleSearch}>
-            Search
+            {t('search')}
           </Button>
         </Space>
       </Card>

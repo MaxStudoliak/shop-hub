@@ -23,6 +23,7 @@ import {
   LogoutOutlined,
 } from '@ant-design/icons'
 import { useAdminStore } from '@/stores/admin.store'
+import { useSettingsStore, Currency, currencySymbols } from '@/stores/settings.store'
 
 const { Header, Sider, Content } = Layout
 
@@ -34,6 +35,7 @@ export default function AdminLayout({
   const [collapsed, setCollapsed] = useState(false)
   const [mounted, setMounted] = useState(false)
   const { admin, logout, isAuthenticated } = useAdminStore()
+  const { t, language, setLanguage, currency, setCurrency } = useSettingsStore()
   const router = useRouter()
   const pathname = usePathname()
   const { token: { colorBgContainer, borderRadiusLG } } = theme.useToken()
@@ -64,30 +66,42 @@ export default function AdminLayout({
     {
       key: '/admin/dashboard',
       icon: <DashboardOutlined />,
-      label: <Link href="/admin/dashboard">Dashboard</Link>,
+      label: <Link href="/admin/dashboard">{t('dashboard')}</Link>,
     },
     {
       key: '/admin/products',
       icon: <ShoppingOutlined />,
-      label: <Link href="/admin/products">Products</Link>,
+      label: <Link href="/admin/products">{t('products')}</Link>,
     },
     {
       key: '/admin/categories',
       icon: <AppstoreOutlined />,
-      label: <Link href="/admin/categories">Categories</Link>,
+      label: <Link href="/admin/categories">{t('categories')}</Link>,
     },
     {
       key: '/admin/orders',
       icon: <OrderedListOutlined />,
-      label: <Link href="/admin/orders">Orders</Link>,
+      label: <Link href="/admin/orders">{t('orders')}</Link>,
     },
+  ]
+
+  const languageMenuItems = [
+    { key: 'en', label: 'English', onClick: () => setLanguage('en') },
+    { key: 'uk', label: 'Українська', onClick: () => setLanguage('uk') },
+    { key: 'ru', label: 'Русский', onClick: () => setLanguage('ru') },
+  ]
+
+  const currencyMenuItems = [
+    { key: 'UAH', label: `${currencySymbols.UAH} UAH`, onClick: () => setCurrency('UAH') },
+    { key: 'USD', label: `${currencySymbols.USD} USD`, onClick: () => setCurrency('USD') },
+    { key: 'EUR', label: `${currencySymbols.EUR} EUR`, onClick: () => setCurrency('EUR') },
   ]
 
   const userMenuItems = [
     {
       key: 'logout',
       icon: <LogoutOutlined />,
-      label: 'Logout',
+      label: t('logout'),
       onClick: () => {
         logout()
         router.push('/admin/login')
@@ -134,12 +148,20 @@ export default function AdminLayout({
             onClick={() => setCollapsed(!collapsed)}
             style={{ fontSize: 16, width: 64, height: 64 }}
           />
-          <Dropdown menu={{ items: userMenuItems }} placement="bottomRight">
-            <Space style={{ cursor: 'pointer' }}>
-              <Avatar icon={<UserOutlined />} />
-              <span>{admin?.name}</span>
-            </Space>
-          </Dropdown>
+          <Space>
+            <Dropdown menu={{ items: currencyMenuItems }} placement="bottomRight">
+              <Button>{currencySymbols[currency]}</Button>
+            </Dropdown>
+            <Dropdown menu={{ items: languageMenuItems }} placement="bottomRight">
+              <Button>{language.toUpperCase()}</Button>
+            </Dropdown>
+            <Dropdown menu={{ items: userMenuItems }} placement="bottomRight">
+              <Space style={{ cursor: 'pointer' }}>
+                <Avatar icon={<UserOutlined />} />
+                <span>{admin?.name}</span>
+              </Space>
+            </Dropdown>
+          </Space>
         </Header>
         <Content
           style={{

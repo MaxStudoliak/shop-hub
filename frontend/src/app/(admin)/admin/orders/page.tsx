@@ -6,9 +6,11 @@ import { Table, Button, Space, Tag, Input, Select, Card, message } from 'antd'
 import { EyeOutlined, SearchOutlined } from '@ant-design/icons'
 import { adminApi } from '@/lib/api'
 import { Order, Pagination } from '@/types'
-import { formatPrice, formatDate } from '@/lib/utils'
+import { formatDate } from '@/lib/utils'
+import { useSettingsStore } from '@/stores/settings.store'
 
 export default function OrdersPage() {
+  const { t, formatPrice } = useSettingsStore()
   const [orders, setOrders] = useState<Order[]>([])
   const [pagination, setPagination] = useState<Pagination>({
     page: 1,
@@ -35,7 +37,7 @@ export default function OrdersPage() {
       setOrders(data.orders)
       setPagination(data.pagination)
     } catch {
-      message.error('Failed to fetch orders')
+      message.error(t('failedToFetch'))
     } finally {
       setLoading(false)
     }
@@ -51,7 +53,7 @@ export default function OrdersPage() {
 
   const columns = [
     {
-      title: 'Order',
+      title: t('orderNumber'),
       dataIndex: 'orderNumber',
       key: 'orderNumber',
       render: (orderNumber: string, record: Order) => (
@@ -61,13 +63,13 @@ export default function OrdersPage() {
       ),
     },
     {
-      title: 'Date',
+      title: t('date'),
       dataIndex: 'createdAt',
       key: 'createdAt',
       render: (date: string) => formatDate(date),
     },
     {
-      title: 'Customer',
+      title: t('customer'),
       key: 'customer',
       render: (_: unknown, record: Order) => (
         <div>
@@ -77,18 +79,18 @@ export default function OrdersPage() {
       ),
     },
     {
-      title: 'Items',
+      title: t('items'),
       key: 'items',
       render: (_: unknown, record: Order) => record.items?.length || 0,
     },
     {
-      title: 'Total',
+      title: t('total'),
       dataIndex: 'total',
       key: 'total',
       render: (total: number) => formatPrice(total),
     },
     {
-      title: 'Status',
+      title: t('status'),
       dataIndex: 'status',
       key: 'status',
       render: (status: string) => {
@@ -99,11 +101,18 @@ export default function OrdersPage() {
           DELIVERED: 'green',
           CANCELLED: 'red',
         }
-        return <Tag color={colors[status]}>{status}</Tag>
+        const statusLabels: Record<string, string> = {
+          PENDING: t('statusPending'),
+          PROCESSING: t('statusProcessing'),
+          SHIPPED: t('statusShipped'),
+          DELIVERED: t('statusDelivered'),
+          CANCELLED: t('statusCancelled'),
+        }
+        return <Tag color={colors[status]}>{statusLabels[status] || status}</Tag>
       },
     },
     {
-      title: 'Payment',
+      title: t('paymentStatus'),
       dataIndex: 'paymentStatus',
       key: 'paymentStatus',
       render: (status: string) => {
@@ -112,11 +121,16 @@ export default function OrdersPage() {
           PAID: 'green',
           FAILED: 'red',
         }
-        return <Tag color={colors[status]}>{status}</Tag>
+        const paymentLabels: Record<string, string> = {
+          PENDING: t('statusPending'),
+          PAID: t('statusPaid'),
+          FAILED: t('statusFailed'),
+        }
+        return <Tag color={colors[status]}>{paymentLabels[status] || status}</Tag>
       },
     },
     {
-      title: 'Actions',
+      title: t('actions'),
       key: 'actions',
       width: 80,
       render: (_: unknown, record: Order) => (
@@ -130,13 +144,13 @@ export default function OrdersPage() {
   return (
     <div>
       <h1 style={{ fontSize: 24, fontWeight: 'bold', marginBottom: 24 }}>
-        Orders
+        {t('orders')}
       </h1>
 
       <Card style={{ marginBottom: 16 }}>
         <Space wrap>
           <Input
-            placeholder="Search orders..."
+            placeholder={t('searchPlaceholder')}
             prefix={<SearchOutlined />}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -144,33 +158,33 @@ export default function OrdersPage() {
             style={{ width: 250 }}
           />
           <Select
-            placeholder="Status"
+            placeholder={t('status')}
             allowClear
             value={statusFilter || undefined}
             onChange={(value) => setStatusFilter(value || '')}
             style={{ width: 150 }}
             options={[
-              { label: 'Pending', value: 'PENDING' },
-              { label: 'Processing', value: 'PROCESSING' },
-              { label: 'Shipped', value: 'SHIPPED' },
-              { label: 'Delivered', value: 'DELIVERED' },
-              { label: 'Cancelled', value: 'CANCELLED' },
+              { label: t('statusPending'), value: 'PENDING' },
+              { label: t('statusProcessing'), value: 'PROCESSING' },
+              { label: t('statusShipped'), value: 'SHIPPED' },
+              { label: t('statusDelivered'), value: 'DELIVERED' },
+              { label: t('statusCancelled'), value: 'CANCELLED' },
             ]}
           />
           <Select
-            placeholder="Payment"
+            placeholder={t('paymentStatus')}
             allowClear
             value={paymentFilter || undefined}
             onChange={(value) => setPaymentFilter(value || '')}
             style={{ width: 150 }}
             options={[
-              { label: 'Pending', value: 'PENDING' },
-              { label: 'Paid', value: 'PAID' },
-              { label: 'Failed', value: 'FAILED' },
+              { label: t('statusPending'), value: 'PENDING' },
+              { label: t('statusPaid'), value: 'PAID' },
+              { label: t('statusFailed'), value: 'FAILED' },
             ]}
           />
           <Button type="primary" onClick={handleSearch}>
-            Search
+            {t('search')}
           </Button>
         </Space>
       </Card>

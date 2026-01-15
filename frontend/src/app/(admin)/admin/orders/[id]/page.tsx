@@ -18,13 +18,15 @@ import {
 import { ArrowLeftOutlined } from '@ant-design/icons'
 import { adminApi } from '@/lib/api'
 import { Order } from '@/types'
-import { formatPrice, formatDate } from '@/lib/utils'
+import { formatDate } from '@/lib/utils'
+import { useSettingsStore } from '@/stores/settings.store'
 
 interface OrderDetailProps {
   params: { id: string }
 }
 
 export default function OrderDetailPage({ params }: OrderDetailProps) {
+  const { t, formatPrice } = useSettingsStore()
   const [order, setOrder] = useState<Order | null>(null)
   const [loading, setLoading] = useState(true)
   const [updating, setUpdating] = useState(false)
@@ -39,7 +41,7 @@ export default function OrderDetailPage({ params }: OrderDetailProps) {
       const { data } = await adminApi.get(`/orders/${params.id}`)
       setOrder(data)
     } catch {
-      message.error('Failed to fetch order')
+      message.error(t('failedToFetch'))
       router.push('/admin/orders')
     } finally {
       setLoading(false)
@@ -51,9 +53,9 @@ export default function OrderDetailPage({ params }: OrderDetailProps) {
     try {
       await adminApi.put(`/orders/${params.id}/status`, { status })
       setOrder((prev) => (prev ? { ...prev, status: status as Order['status'] } : null))
-      message.success('Order status updated')
+      message.success(t('statusUpdated'))
     } catch {
-      message.error('Failed to update status')
+      message.error(t('failedToUpdate'))
     } finally {
       setUpdating(false)
     }
@@ -87,7 +89,7 @@ export default function OrderDetailPage({ params }: OrderDetailProps) {
 
   const itemColumns = [
     {
-      title: 'Product',
+      title: t('product'),
       key: 'product',
       render: (_: unknown, record: any) => (
         <Space>
@@ -115,18 +117,18 @@ export default function OrderDetailPage({ params }: OrderDetailProps) {
       ),
     },
     {
-      title: 'Price',
+      title: t('price'),
       dataIndex: 'price',
       key: 'price',
       render: (price: number) => formatPrice(price),
     },
     {
-      title: 'Quantity',
+      title: t('quantity'),
       dataIndex: 'quantity',
       key: 'quantity',
     },
     {
-      title: 'Total',
+      title: t('total'),
       key: 'total',
       render: (_: unknown, record: any) =>
         formatPrice(Number(record.price) * record.quantity),
@@ -140,7 +142,7 @@ export default function OrderDetailPage({ params }: OrderDetailProps) {
           icon={<ArrowLeftOutlined />}
           onClick={() => router.push('/admin/orders')}
         >
-          Back to Orders
+          {t('backToOrders')}
         </Button>
       </div>
 
@@ -153,21 +155,21 @@ export default function OrderDetailPage({ params }: OrderDetailProps) {
         }}
       >
         <h1 style={{ fontSize: 24, fontWeight: 'bold', margin: 0 }}>
-          Order {order.orderNumber}
+          {t('order')} {order.orderNumber}
         </h1>
         <Space>
           <Tag color={statusColors[order.status]} style={{ fontSize: 14, padding: '4px 12px' }}>
-            {order.status}
+            {t(`status${order.status.charAt(0) + order.status.slice(1).toLowerCase()}`) || order.status}
           </Tag>
           <Tag color={paymentColors[order.paymentStatus]} style={{ fontSize: 14, padding: '4px 12px' }}>
-            {order.paymentStatus}
+            {t(`status${order.paymentStatus.charAt(0) + order.paymentStatus.slice(1).toLowerCase()}`) || order.paymentStatus}
           </Tag>
         </Space>
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 24 }}>
         <div>
-          <Card title="Order Items">
+          <Card title={t('orderItems')}>
             <Table
               dataSource={order.items}
               columns={itemColumns}
@@ -178,19 +180,19 @@ export default function OrderDetailPage({ params }: OrderDetailProps) {
             <div style={{ textAlign: 'right' }}>
               <Space direction="vertical" align="end">
                 <div>
-                  <span style={{ marginRight: 24 }}>Subtotal:</span>
+                  <span style={{ marginRight: 24 }}>{t('subtotal')}:</span>
                   <span>{formatPrice(order.subtotal)}</span>
                 </div>
                 <div>
-                  <span style={{ marginRight: 24 }}>Shipping:</span>
+                  <span style={{ marginRight: 24 }}>{t('shipping')}:</span>
                   <span>
                     {Number(order.shippingCost) === 0
-                      ? 'Free'
+                      ? t('free')
                       : formatPrice(order.shippingCost)}
                   </span>
                 </div>
                 <div style={{ fontSize: 18, fontWeight: 'bold' }}>
-                  <span style={{ marginRight: 24 }}>Total:</span>
+                  <span style={{ marginRight: 24 }}>{t('total')}:</span>
                   <span>{formatPrice(order.total)}</span>
                 </div>
               </Space>
@@ -199,35 +201,35 @@ export default function OrderDetailPage({ params }: OrderDetailProps) {
         </div>
 
         <div>
-          <Card title="Order Details" style={{ marginBottom: 24 }}>
+          <Card title={t('orderDetails')} style={{ marginBottom: 24 }}>
             <Descriptions column={1} size="small">
-              <Descriptions.Item label="Order Number">
+              <Descriptions.Item label={t('orderNumber')}>
                 {order.orderNumber}
               </Descriptions.Item>
-              <Descriptions.Item label="Date">
+              <Descriptions.Item label={t('date')}>
                 {formatDate(order.createdAt)}
               </Descriptions.Item>
-              <Descriptions.Item label="Payment ID">
+              <Descriptions.Item label={t('paymentId')}>
                 {order.stripePaymentId || '-'}
               </Descriptions.Item>
             </Descriptions>
           </Card>
 
-          <Card title="Customer Information" style={{ marginBottom: 24 }}>
+          <Card title={t('customerInformation')} style={{ marginBottom: 24 }}>
             <Descriptions column={1} size="small">
-              <Descriptions.Item label="Name">
+              <Descriptions.Item label={t('name')}>
                 {order.customerName}
               </Descriptions.Item>
-              <Descriptions.Item label="Email">
+              <Descriptions.Item label={t('email')}>
                 {order.customerEmail}
               </Descriptions.Item>
-              <Descriptions.Item label="Phone">
+              <Descriptions.Item label={t('phone')}>
                 {order.customerPhone}
               </Descriptions.Item>
             </Descriptions>
           </Card>
 
-          <Card title="Shipping Address" style={{ marginBottom: 24 }}>
+          <Card title={t('shippingAddress')} style={{ marginBottom: 24 }}>
             <div>
               {order.shippingAddress}
               <br />
@@ -237,18 +239,18 @@ export default function OrderDetailPage({ params }: OrderDetailProps) {
             </div>
           </Card>
 
-          <Card title="Update Status">
+          <Card title={t('updateStatus')}>
             <Select
               value={order.status}
               onChange={handleStatusChange}
               loading={updating}
               style={{ width: '100%' }}
               options={[
-                { label: 'Pending', value: 'PENDING' },
-                { label: 'Processing', value: 'PROCESSING' },
-                { label: 'Shipped', value: 'SHIPPED' },
-                { label: 'Delivered', value: 'DELIVERED' },
-                { label: 'Cancelled', value: 'CANCELLED' },
+                { label: t('statusPending'), value: 'PENDING' },
+                { label: t('statusProcessing'), value: 'PROCESSING' },
+                { label: t('statusShipped'), value: 'SHIPPED' },
+                { label: t('statusDelivered'), value: 'DELIVERED' },
+                { label: t('statusCancelled'), value: 'CANCELLED' },
               ]}
             />
           </Card>

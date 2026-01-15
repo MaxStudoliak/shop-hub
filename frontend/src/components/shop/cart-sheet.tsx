@@ -1,5 +1,6 @@
 'use client'
 
+import { useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { Minus, Plus, Trash2 } from 'lucide-react'
@@ -14,7 +15,6 @@ import {
 } from '@/components/ui/sheet'
 import { Separator } from '@/components/ui/separator'
 import { useCartStore } from '@/stores/cart.store'
-import { formatPrice } from '@/lib/utils'
 import { useSettingsStore } from '@/stores/settings.store'
 
 interface CartSheetProps {
@@ -23,10 +23,11 @@ interface CartSheetProps {
 
 export function CartSheet({ children }: CartSheetProps) {
   const { items, updateQuantity, removeItem, getTotalPrice } = useCartStore()
-  const { t } = useSettingsStore()
+  const { t, formatPrice } = useSettingsStore()
+  const [open, setOpen] = useState(false)
 
   return (
-    <Sheet>
+    <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>{children}</SheetTrigger>
       <SheetContent className="flex flex-col">
         <SheetHeader>
@@ -105,7 +106,7 @@ export function CartSheet({ children }: CartSheetProps) {
                 <span>{formatPrice(getTotalPrice())}</span>
               </div>
               <SheetFooter>
-                <Button asChild className="w-full">
+                <Button asChild className="w-full" onClick={() => setOpen(false)}>
                   <Link href="/checkout">{t('proceedToCheckout')}</Link>
                 </Button>
               </SheetFooter>

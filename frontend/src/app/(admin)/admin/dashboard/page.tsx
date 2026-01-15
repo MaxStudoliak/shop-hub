@@ -10,11 +10,13 @@ import {
 } from '@ant-design/icons'
 import { adminApi } from '@/lib/api'
 import { Stats, Order } from '@/types'
-import { formatPrice, formatDate } from '@/lib/utils'
+import { formatDate } from '@/lib/utils'
+import { useSettingsStore } from '@/stores/settings.store'
 
 export default function DashboardPage() {
   const [stats, setStats] = useState<Stats | null>(null)
   const [loading, setLoading] = useState(true)
+  const { t, formatPrice } = useSettingsStore()
 
   useEffect(() => {
     async function fetchStats() {
@@ -39,29 +41,29 @@ export default function DashboardPage() {
   }
 
   if (!stats) {
-    return <div>Failed to load dashboard</div>
+    return <div>{t('failedToFetch')}</div>
   }
 
   const orderColumns = [
     {
-      title: 'Order',
+      title: t('orderNumber'),
       dataIndex: 'orderNumber',
       key: 'orderNumber',
     },
     {
-      title: 'Date',
+      title: t('date'),
       dataIndex: 'createdAt',
       key: 'createdAt',
       render: (date: string) => formatDate(date),
     },
     {
-      title: 'Total',
+      title: t('total'),
       dataIndex: 'total',
       key: 'total',
       render: (total: number) => formatPrice(total),
     },
     {
-      title: 'Status',
+      title: t('status'),
       dataIndex: 'status',
       key: 'status',
       render: (status: string) => {
@@ -76,7 +78,7 @@ export default function DashboardPage() {
       },
     },
     {
-      title: 'Payment',
+      title: t('paymentStatus'),
       dataIndex: 'paymentStatus',
       key: 'paymentStatus',
       render: (status: string) => {
@@ -93,19 +95,19 @@ export default function DashboardPage() {
   return (
     <div>
       <h1 style={{ marginBottom: 24, fontSize: 24, fontWeight: 'bold' }}>
-        Dashboard
+        {t('dashboard')}
       </h1>
 
       <Row gutter={[16, 16]}>
         <Col xs={24} sm={12} lg={6}>
           <Card>
             <Statistic
-              title="Total Products"
+              title={t('totalProducts')}
               value={stats.products.total}
               prefix={<ShoppingOutlined />}
               suffix={
                 <span style={{ fontSize: 14, color: '#52c41a' }}>
-                  {stats.products.active} active
+                  {stats.products.active} {t('active')}
                 </span>
               }
             />
@@ -114,12 +116,12 @@ export default function DashboardPage() {
         <Col xs={24} sm={12} lg={6}>
           <Card>
             <Statistic
-              title="Total Orders"
+              title={t('totalOrders')}
               value={stats.orders.total}
               prefix={<OrderedListOutlined />}
               suffix={
                 <span style={{ fontSize: 14, color: '#faad14' }}>
-                  {stats.orders.pending} pending
+                  {stats.orders.pending} {t('pending')}
                 </span>
               }
             />
@@ -128,17 +130,17 @@ export default function DashboardPage() {
         <Col xs={24} sm={12} lg={6}>
           <Card>
             <Statistic
-              title="Total Revenue"
+              title={t('totalRevenue')}
               value={stats.revenue.total}
+              formatter={(value) => formatPrice(Number(value))}
               prefix={<DollarOutlined />}
-              precision={2}
             />
           </Card>
         </Col>
         <Col xs={24} sm={12} lg={6}>
           <Card>
             <Statistic
-              title="Categories"
+              title={t('categories')}
               value={stats.categories.total}
               prefix={<AppstoreOutlined />}
             />
@@ -148,21 +150,20 @@ export default function DashboardPage() {
 
       <Row gutter={[16, 16]} style={{ marginTop: 24 }}>
         <Col xs={24} lg={12}>
-          <Card title="This Month">
+          <Card title={t('thisMonth')}>
             <Row gutter={16}>
               <Col span={12}>
                 <Statistic
-                  title="Orders"
+                  title={t('orders')}
                   value={stats.orders.thisMonth}
                   valueStyle={{ color: '#1890ff' }}
                 />
               </Col>
               <Col span={12}>
                 <Statistic
-                  title="Revenue"
+                  title={t('revenue')}
                   value={stats.revenue.thisMonth}
-                  precision={2}
-                  prefix="$"
+                  formatter={(value) => formatPrice(Number(value))}
                   valueStyle={{ color: '#52c41a' }}
                 />
               </Col>
@@ -170,9 +171,9 @@ export default function DashboardPage() {
           </Card>
         </Col>
         <Col xs={24} lg={12}>
-          <Card title="Today">
+          <Card title={t('today')}>
             <Statistic
-              title="Orders"
+              title={t('orders')}
               value={stats.orders.today}
               valueStyle={{ color: '#1890ff' }}
             />
@@ -180,7 +181,7 @@ export default function DashboardPage() {
         </Col>
       </Row>
 
-      <Card title="Recent Orders" style={{ marginTop: 24 }}>
+      <Card title={t('recentOrders')} style={{ marginTop: 24 }}>
         <Table
           dataSource={stats.recentOrders}
           columns={orderColumns}

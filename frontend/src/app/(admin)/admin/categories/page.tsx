@@ -18,10 +18,12 @@ import {
 import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons'
 import { adminApi } from '@/lib/api'
 import { Category } from '@/types'
+import { useSettingsStore } from '@/stores/settings.store'
 
 const { TextArea } = Input
 
 export default function CategoriesPage() {
+  const { t } = useSettingsStore()
   const [categories, setCategories] = useState<Category[]>([])
   const [loading, setLoading] = useState(true)
   const [modalOpen, setModalOpen] = useState(false)
@@ -37,7 +39,7 @@ export default function CategoriesPage() {
       const { data } = await adminApi.get('/categories')
       setCategories(data)
     } catch {
-      message.error('Failed to fetch categories')
+      message.error(t('failedToFetch'))
     } finally {
       setLoading(false)
     }
@@ -67,10 +69,10 @@ export default function CategoriesPage() {
   const handleDelete = async (id: string) => {
     try {
       await adminApi.delete(`/categories/${id}`)
-      message.success('Category deleted')
+      message.success(t('categoryDeleted'))
       fetchCategories()
     } catch (error: any) {
-      message.error(error.response?.data?.error || 'Failed to delete category')
+      message.error(error.response?.data?.error || t('failedToDelete'))
     }
   }
 
@@ -91,7 +93,7 @@ export default function CategoriesPage() {
       onSuccess(data)
     } catch {
       onError(new Error('Upload failed'))
-      message.error('Failed to upload image')
+      message.error(t('failedToUpload'))
     } finally {
       setUploading(false)
     }
@@ -107,15 +109,15 @@ export default function CategoriesPage() {
 
       if (editingCategory) {
         await adminApi.put(`/categories/${editingCategory.id}`, payload)
-        message.success('Category updated')
+        message.success(t('categoryUpdated'))
       } else {
         await adminApi.post('/categories', payload)
-        message.success('Category created')
+        message.success(t('categoryCreated'))
       }
       setModalOpen(false)
       fetchCategories()
     } catch (error: any) {
-      message.error(error.response?.data?.error || 'Failed to save category')
+      message.error(error.response?.data?.error || t('failedToSave'))
     } finally {
       setSaving(false)
     }
@@ -123,7 +125,7 @@ export default function CategoriesPage() {
 
   const columns = [
     {
-      title: 'Image',
+      title: t('image'),
       key: 'image',
       width: 80,
       render: (_: unknown, record: Category) => (
@@ -149,28 +151,28 @@ export default function CategoriesPage() {
       ),
     },
     {
-      title: 'Name',
+      title: t('name'),
       dataIndex: 'name',
       key: 'name',
     },
     {
-      title: 'Slug',
+      title: t('slug'),
       dataIndex: 'slug',
       key: 'slug',
     },
     {
-      title: 'Description',
+      title: t('description'),
       dataIndex: 'description',
       key: 'description',
       ellipsis: true,
     },
     {
-      title: 'Products',
+      title: t('products'),
       key: 'products',
       render: (_: unknown, record: Category) => record._count?.products || 0,
     },
     {
-      title: 'Actions',
+      title: t('actions'),
       key: 'actions',
       width: 120,
       render: (_: unknown, record: Category) => (
@@ -181,12 +183,11 @@ export default function CategoriesPage() {
             onClick={() => handleEdit(record)}
           />
           <Popconfirm
-            title="Delete this category?"
-            description="Products in this category will need to be reassigned."
+            title={t('deleteCategoryConfirm')}
+            description={t('categoryReassignWarning')}
             onConfirm={() => handleDelete(record.id)}
-            okText="Yes"
-            cancelText="No"
-          >
+            okText={t('yes')}
+            cancelText={t('no')}>
             <Button icon={<DeleteOutlined />} size="small" danger />
           </Popconfirm>
         </Space>
@@ -205,10 +206,10 @@ export default function CategoriesPage() {
         }}
       >
         <h1 style={{ fontSize: 24, fontWeight: 'bold', margin: 0 }}>
-          Categories
+          {t('categories')}
         </h1>
         <Button type="primary" icon={<PlusOutlined />} onClick={handleAdd}>
-          Add Category
+          {t('addCategory')}
         </Button>
       </div>
 
@@ -221,7 +222,7 @@ export default function CategoriesPage() {
       />
 
       <Modal
-        title={editingCategory ? 'Edit Category' : 'Add Category'}
+        title={editingCategory ? t('editCategory') : t('addCategory')}
         open={modalOpen}
         onCancel={() => setModalOpen(false)}
         footer={null}
@@ -229,17 +230,17 @@ export default function CategoriesPage() {
         <Form form={form} layout="vertical" onFinish={onFinish}>
           <Form.Item
             name="name"
-            label="Category Name"
-            rules={[{ required: true, message: 'Please enter category name' }]}
+            label={t('categoryName')}
+            rules={[{ required: true, message: t('pleaseEnterCategoryName') }]}
           >
-            <Input placeholder="Enter category name" />
+            <Input placeholder={t('enterCategoryName')} />
           </Form.Item>
 
-          <Form.Item name="description" label="Description">
-            <TextArea rows={3} placeholder="Enter description" />
+          <Form.Item name="description" label={t('description')}>
+            <TextArea rows={3} placeholder={t('enterDescription')} />
           </Form.Item>
 
-          <Form.Item label="Image">
+          <Form.Item label={t('image')}>
             <Space direction="vertical">
               {imageUrl && (
                 <div style={{ position: 'relative', width: 100, height: 100 }}>
@@ -286,9 +287,9 @@ export default function CategoriesPage() {
 
           <Form.Item style={{ marginBottom: 0, textAlign: 'right' }}>
             <Space>
-              <Button onClick={() => setModalOpen(false)}>Cancel</Button>
+              <Button onClick={() => setModalOpen(false)}>{t('cancel')}</Button>
               <Button type="primary" htmlType="submit" loading={saving}>
-                {editingCategory ? 'Update' : 'Create'}
+                {editingCategory ? t('update') : t('create')}
               </Button>
             </Space>
           </Form.Item>

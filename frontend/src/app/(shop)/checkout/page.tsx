@@ -82,20 +82,35 @@ function CheckoutFormContent({
       }
 
       if (paymentIntent?.status === 'succeeded') {
+        console.log('Payment succeeded, creating order...')
         // Create order
-        const { data: order } = await api.post('/orders', {
-          ...formData,
-          items: items.map((item) => ({
-            productId: item.productId,
-            quantity: item.quantity,
-          })),
-          stripePaymentId: paymentIntent.id,
-        })
+        try {
+          const { data: order } = await api.post('/orders', {
+            ...formData,
+            items: items.map((item) => ({
+              productId: item.productId,
+              quantity: item.quantity,
+            })),
+            stripePaymentId: paymentIntent.id,
+          })
 
-        clearCart()
-        router.push(`/checkout/success?orderId=${order.id}`)
+          console.log('Order created:', order)
+          clearCart()
+          console.log('Cart cleared, redirecting to success page...')
+
+          // Use window.location for reliable redirect
+          window.location.href = `/checkout/success?orderId=${order.id}`
+        } catch (orderError) {
+          console.error('Error creating order:', orderError)
+          toast({
+            title: t('error'),
+            description: 'Order created but there was an error. Please contact support.',
+            variant: 'destructive',
+          })
+        }
       }
     } catch (err) {
+      console.error('Payment error:', err)
       toast({
         title: t('error'),
         description: t('somethingWrong'),
