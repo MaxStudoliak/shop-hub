@@ -13,6 +13,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { api } from '@/lib/api'
 import { useUserStore } from '@/stores/user.store'
 import { toast } from '@/hooks/use-toast'
+import { useSettingsStore } from '@/stores/settings.store'
 
 const registerSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
@@ -30,6 +31,7 @@ export default function RegisterPage() {
   const [loading, setLoading] = useState(false)
   const router = useRouter()
   const { setAuth } = useUserStore()
+  const { t } = useSettingsStore()
 
   const {
     register,
@@ -48,12 +50,12 @@ export default function RegisterPage() {
         password: data.password,
       })
       setAuth(response.data.user, response.data.token)
-      toast({ title: 'Account created successfully!' })
+      toast({ title: t('accountCreated') })
       router.push('/account')
     } catch (error: any) {
       toast({
-        title: 'Registration failed',
-        description: error.response?.data?.error || 'Something went wrong',
+        title: t('registrationFailed'),
+        description: error.response?.data?.error || t('somethingWrong'),
         variant: 'destructive',
       })
     } finally {
@@ -65,13 +67,13 @@ export default function RegisterPage() {
     <div className="container max-w-md py-16">
       <Card>
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl">Create Account</CardTitle>
-          <CardDescription>Sign up to start shopping</CardDescription>
+          <CardTitle className="text-2xl">{t('createAccountTitle')}</CardTitle>
+          <CardDescription>{t('signUpToStart')}</CardDescription>
         </CardHeader>
         <form onSubmit={handleSubmit(onSubmit)}>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="name">Full Name</Label>
+              <Label htmlFor="name">{t('fullName')}</Label>
               <Input
                 id="name"
                 placeholder="John Doe"
@@ -82,7 +84,7 @@ export default function RegisterPage() {
               )}
             </div>
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">{t('email')}</Label>
               <Input
                 id="email"
                 type="email"
@@ -94,11 +96,11 @@ export default function RegisterPage() {
               )}
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password">{t('password')}</Label>
               <Input
                 id="password"
                 type="password"
-                placeholder="At least 6 characters"
+                placeholder={t('atLeast6Chars')}
                 {...register('password')}
               />
               {errors.password && (
@@ -106,11 +108,11 @@ export default function RegisterPage() {
               )}
             </div>
             <div className="space-y-2">
-              <Label htmlFor="confirmPassword">Confirm Password</Label>
+              <Label htmlFor="confirmPassword">{t('confirmPassword')}</Label>
               <Input
                 id="confirmPassword"
                 type="password"
-                placeholder="Confirm your password"
+                placeholder={t('confirmYourPassword')}
                 {...register('confirmPassword')}
               />
               {errors.confirmPassword && (
@@ -120,12 +122,12 @@ export default function RegisterPage() {
           </CardContent>
           <CardFooter className="flex flex-col gap-4">
             <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? 'Creating account...' : 'Create Account'}
+              {loading ? t('creatingAccount') : t('createAccount')}
             </Button>
             <p className="text-sm text-muted-foreground text-center">
-              Already have an account?{' '}
+              {t('alreadyHaveAccount')}{' '}
               <Link href="/login" className="text-primary hover:underline">
-                Sign in
+                {t('signIn')}
               </Link>
             </p>
           </CardFooter>

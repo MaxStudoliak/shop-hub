@@ -14,6 +14,7 @@ import { useCartStore } from '@/stores/cart.store'
 import { toast } from '@/hooks/use-toast'
 import { FavoriteButton } from '@/components/shop/favorite-button'
 import { ProductReviews } from '@/components/shop/product-reviews'
+import { useSettingsStore } from '@/stores/settings.store'
 
 interface ProductPageProps {
   params: { slug: string }
@@ -24,6 +25,7 @@ export default function ProductPage({ params }: ProductPageProps) {
   const [selectedImage, setSelectedImage] = useState(0)
   const [quantity, setQuantity] = useState(1)
   const [loading, setLoading] = useState(true)
+  const { t } = useSettingsStore()
 
   const addItem = useCartStore((state) => state.addItem)
 
@@ -62,9 +64,9 @@ export default function ProductPage({ params }: ProductPageProps) {
   if (!product) {
     return (
       <div className="container py-8 text-center">
-        <h1 className="text-2xl font-bold mb-4">Product not found</h1>
+        <h1 className="text-2xl font-bold mb-4">{t('productNotFound')}</h1>
         <Button asChild>
-          <Link href="/products">Back to Products</Link>
+          <Link href="/products">{t('backToProducts')}</Link>
         </Button>
       </div>
     )
@@ -93,8 +95,8 @@ export default function ProductPage({ params }: ProductPageProps) {
       })
     }
     toast({
-      title: 'Added to cart',
-      description: `${quantity}x ${product.name} has been added to your cart.`,
+      title: t('addedToCartMsg'),
+      description: `${quantity}x ${product.name} ${t('addedToCartDesc')}.`,
     })
   }
 
@@ -103,7 +105,7 @@ export default function ProductPage({ params }: ProductPageProps) {
       <Button variant="ghost" asChild className="mb-8">
         <Link href="/products">
           <ChevronLeft className="mr-2 h-4 w-4" />
-          Back to Products
+          {t('backToProducts')}
         </Link>
       </Button>
 
@@ -121,7 +123,7 @@ export default function ProductPage({ params }: ProductPageProps) {
               />
             ) : (
               <div className="w-full h-full flex items-center justify-center">
-                <span className="text-muted-foreground">No image</span>
+                <span className="text-muted-foreground">{t('noImage')}</span>
               </div>
             )}
             {hasDiscount && (
@@ -141,9 +143,8 @@ export default function ProductPage({ params }: ProductPageProps) {
                 <button
                   key={image.id}
                   onClick={() => setSelectedImage(idx)}
-                  className={`relative w-20 h-20 flex-shrink-0 rounded-md overflow-hidden border-2 ${
-                    selectedImage === idx ? 'border-primary' : 'border-transparent'
-                  }`}
+                  className={`relative w-20 h-20 flex-shrink-0 rounded-md overflow-hidden border-2 ${selectedImage === idx ? 'border-primary' : 'border-transparent'
+                    }`}
                 >
                   <Image
                     src={image.url}
@@ -164,7 +165,7 @@ export default function ProductPage({ params }: ProductPageProps) {
               href={`/products?category=${product.category.slug}`}
               className="text-sm text-muted-foreground hover:text-foreground"
             >
-              {product.category.name}
+              {t(`category.${product.category.slug}` as any) || product.category.name}
             </Link>
             <h1 className="text-3xl font-bold mt-2">{product.name}</h1>
           </div>
@@ -181,22 +182,22 @@ export default function ProductPage({ params }: ProductPageProps) {
           <Separator />
 
           <div>
-            <h3 className="font-semibold mb-2">Description</h3>
+            <h3 className="font-semibold mb-2">{t('description')}</h3>
             <p className="text-muted-foreground">{product.description}</p>
           </div>
 
           <div className="flex items-center gap-4">
-            <span className="font-semibold">Availability:</span>
+            <span className="font-semibold">{t('availability')}:</span>
             {product.stock > 0 ? (
-              <Badge variant="success">In Stock ({product.stock} available)</Badge>
+              <Badge variant="success">{t('inStock')} ({product.stock} {t('available')})</Badge>
             ) : (
-              <Badge variant="secondary">Out of Stock</Badge>
+              <Badge variant="secondary">{t('outOfStock')}</Badge>
             )}
           </div>
 
           {product.sku && (
             <div className="flex items-center gap-4">
-              <span className="font-semibold">SKU:</span>
+              <span className="font-semibold">{t('sku')}:</span>
               <span className="text-muted-foreground">{product.sku}</span>
             </div>
           )}
@@ -205,7 +206,7 @@ export default function ProductPage({ params }: ProductPageProps) {
 
           <div className="space-y-4">
             <div className="flex items-center gap-4">
-              <span className="font-semibold">Quantity:</span>
+              <span className="font-semibold">{t('quantity')}:</span>
               <div className="flex items-center gap-2">
                 <Button
                   variant="outline"
@@ -235,7 +236,7 @@ export default function ProductPage({ params }: ProductPageProps) {
                 disabled={product.stock === 0}
               >
                 <ShoppingCart className="mr-2 h-5 w-5" />
-                Add to Cart
+                {t('addToCart')}
               </Button>
               <FavoriteButton productId={product.id} variant="button" />
             </div>

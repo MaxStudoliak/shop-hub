@@ -22,6 +22,7 @@ import { useCartStore } from '@/stores/cart.store'
 import { api } from '@/lib/api'
 import { formatPrice } from '@/lib/utils'
 import { toast } from '@/hooks/use-toast'
+import { useSettingsStore } from '@/stores/settings.store'
 
 const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || ''
@@ -51,6 +52,7 @@ function CheckoutFormContent({
   const router = useRouter()
   const { items, clearCart, getTotalPrice } = useCartStore()
   const [processing, setProcessing] = useState(false)
+  const { t } = useSettingsStore()
 
   const subtotal = getTotalPrice()
   const shipping = subtotal >= 100 ? 0 : 10
@@ -71,7 +73,7 @@ function CheckoutFormContent({
 
       if (error) {
         toast({
-          title: 'Payment failed',
+          title: t('paymentFailed'),
           description: error.message,
           variant: 'destructive',
         })
@@ -95,8 +97,8 @@ function CheckoutFormContent({
       }
     } catch (err) {
       toast({
-        title: 'Error',
-        description: 'Something went wrong. Please try again.',
+        title: t('error'),
+        description: t('somethingWrong'),
         variant: 'destructive',
       })
     } finally {
@@ -108,7 +110,7 @@ function CheckoutFormContent({
     <form onSubmit={handleSubmit} className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle>Payment</CardTitle>
+          <CardTitle>{t('payment')}</CardTitle>
         </CardHeader>
         <CardContent>
           <PaymentElement />
@@ -117,7 +119,7 @@ function CheckoutFormContent({
 
       <Card>
         <CardHeader>
-          <CardTitle>Order Summary</CardTitle>
+          <CardTitle>{t('orderSummary')}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           {items.map((item) => (
@@ -133,7 +135,7 @@ function CheckoutFormContent({
               <div className="flex-1 min-w-0">
                 <p className="font-medium truncate">{item.name}</p>
                 <p className="text-sm text-muted-foreground">
-                  Qty: {item.quantity}
+                  {t('qty')}: {item.quantity}
                 </p>
               </div>
               <p className="font-medium">
@@ -144,16 +146,16 @@ function CheckoutFormContent({
           <Separator />
           <div className="space-y-2">
             <div className="flex justify-between">
-              <span>Subtotal</span>
+              <span>{t('subtotal')}</span>
               <span>{formatPrice(subtotal)}</span>
             </div>
             <div className="flex justify-between">
-              <span>Shipping</span>
-              <span>{shipping === 0 ? 'Free' : formatPrice(shipping)}</span>
+              <span>{t('shipping')}</span>
+              <span>{shipping === 0 ? t('free') : formatPrice(shipping)}</span>
             </div>
             <Separator />
             <div className="flex justify-between font-bold text-lg">
-              <span>Total</span>
+              <span>{t('total')}</span>
               <span>{formatPrice(total)}</span>
             </div>
           </div>
@@ -166,7 +168,7 @@ function CheckoutFormContent({
         className="w-full"
         disabled={!stripe || !elements || processing}
       >
-        {processing ? 'Processing...' : `Pay ${formatPrice(total)}`}
+        {processing ? t('processing') : `${t('pay')} ${formatPrice(total)}`}
       </Button>
     </form>
   )
@@ -178,6 +180,7 @@ export default function CheckoutPage() {
   const [clientSecret, setClientSecret] = useState('')
   const [step, setStep] = useState<'info' | 'payment'>('info')
   const [formData, setFormData] = useState<CheckoutForm | null>(null)
+  const { t } = useSettingsStore()
 
   const {
     register,
@@ -208,8 +211,8 @@ export default function CheckoutPage() {
       setStep('payment')
     } catch {
       toast({
-        title: 'Error',
-        description: 'Failed to initialize payment. Please try again.',
+        title: t('error'),
+        description: t('failedToInitPayment'),
         variant: 'destructive',
       })
     }
@@ -221,7 +224,7 @@ export default function CheckoutPage() {
 
   return (
     <div className="container py-8 max-w-4xl">
-      <h1 className="text-3xl font-bold mb-8">Checkout</h1>
+      <h1 className="text-3xl font-bold mb-8">{t('checkout')}</h1>
 
       {step === 'info' && (
         <form onSubmit={handleSubmit(onSubmitInfo)}>
@@ -229,11 +232,11 @@ export default function CheckoutPage() {
             <div className="space-y-6">
               <Card>
                 <CardHeader>
-                  <CardTitle>Contact Information</CardTitle>
+                  <CardTitle>{t('contactInformation')}</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div>
-                    <Label htmlFor="customerName">Full Name</Label>
+                    <Label htmlFor="customerName">{t('fullName')}</Label>
                     <Input
                       id="customerName"
                       {...register('customerName')}
@@ -246,7 +249,7 @@ export default function CheckoutPage() {
                     )}
                   </div>
                   <div>
-                    <Label htmlFor="customerEmail">Email</Label>
+                    <Label htmlFor="customerEmail">{t('email')}</Label>
                     <Input
                       id="customerEmail"
                       type="email"
@@ -260,7 +263,7 @@ export default function CheckoutPage() {
                     )}
                   </div>
                   <div>
-                    <Label htmlFor="customerPhone">Phone</Label>
+                    <Label htmlFor="customerPhone">{t('phone')}</Label>
                     <Input
                       id="customerPhone"
                       {...register('customerPhone')}
@@ -277,11 +280,11 @@ export default function CheckoutPage() {
 
               <Card>
                 <CardHeader>
-                  <CardTitle>Shipping Address</CardTitle>
+                  <CardTitle>{t('shippingInformation')}</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div>
-                    <Label htmlFor="shippingAddress">Address</Label>
+                    <Label htmlFor="shippingAddress">{t('address')}</Label>
                     <Input
                       id="shippingAddress"
                       {...register('shippingAddress')}
@@ -295,7 +298,7 @@ export default function CheckoutPage() {
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <Label htmlFor="shippingCity">City</Label>
+                      <Label htmlFor="shippingCity">{t('city')}</Label>
                       <Input
                         id="shippingCity"
                         {...register('shippingCity')}
@@ -308,7 +311,7 @@ export default function CheckoutPage() {
                       )}
                     </div>
                     <div>
-                      <Label htmlFor="shippingZip">ZIP Code</Label>
+                      <Label htmlFor="shippingZip">{t('zipCode')}</Label>
                       <Input
                         id="shippingZip"
                         {...register('shippingZip')}
@@ -322,7 +325,7 @@ export default function CheckoutPage() {
                     </div>
                   </div>
                   <div>
-                    <Label htmlFor="shippingCountry">Country</Label>
+                    <Label htmlFor="shippingCountry">{t('country')}</Label>
                     <Input
                       id="shippingCountry"
                       {...register('shippingCountry')}
@@ -341,7 +344,7 @@ export default function CheckoutPage() {
             <div>
               <Card>
                 <CardHeader>
-                  <CardTitle>Order Summary</CardTitle>
+                  <CardTitle>{t('orderSummary')}</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   {items.map((item) => (
@@ -357,7 +360,7 @@ export default function CheckoutPage() {
                       <div className="flex-1 min-w-0">
                         <p className="font-medium truncate">{item.name}</p>
                         <p className="text-sm text-muted-foreground">
-                          Qty: {item.quantity}
+                          {t('qty')}: {item.quantity}
                         </p>
                       </div>
                       <p className="font-medium">
@@ -368,21 +371,21 @@ export default function CheckoutPage() {
                   <Separator />
                   <div className="space-y-2">
                     <div className="flex justify-between">
-                      <span>Subtotal</span>
+                      <span>{t('subtotal')}</span>
                       <span>{formatPrice(subtotal)}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span>Shipping</span>
-                      <span>{shipping === 0 ? 'Free' : formatPrice(shipping)}</span>
+                      <span>{t('shipping')}</span>
+                      <span>{shipping === 0 ? t('free') : formatPrice(shipping)}</span>
                     </div>
                     <Separator />
                     <div className="flex justify-between font-bold text-lg">
-                      <span>Total</span>
+                      <span>{t('total')}</span>
                       <span>{formatPrice(total)}</span>
                     </div>
                   </div>
                   <Button type="submit" size="lg" className="w-full">
-                    Continue to Payment
+                    {t('continueToPayment')}
                   </Button>
                 </CardContent>
               </Card>
@@ -405,7 +408,7 @@ export default function CheckoutPage() {
               className="mb-4"
               onClick={() => setStep('info')}
             >
-              Back to Information
+              {t('backToInformation')}
             </Button>
             <CheckoutFormContent clientSecret={clientSecret} formData={formData} />
           </div>

@@ -12,6 +12,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { Category } from '@/types'
+import { useSettingsStore } from '@/stores/settings.store'
 
 interface ProductFiltersProps {
   categories: Category[]
@@ -20,6 +21,7 @@ interface ProductFiltersProps {
 export function ProductFilters({ categories }: ProductFiltersProps) {
   const router = useRouter()
   const searchParams = useSearchParams()
+  const { t } = useSettingsStore()
 
   const currentCategory = searchParams.get('category') || ''
   const currentSort = searchParams.get('sort') || 'createdAt'
@@ -44,22 +46,22 @@ export function ProductFilters({ categories }: ProductFiltersProps) {
 
   return (
     <div className="space-y-4 p-4 border rounded-lg bg-background">
-      <h3 className="font-semibold">Filters</h3>
+      <h3 className="font-semibold">{t('filters')}</h3>
 
       <div className="space-y-2">
-        <Label>Category</Label>
+        <Label>{t('category')}</Label>
         <Select
           value={currentCategory || 'all'}
           onValueChange={(value) => updateFilters('category', value === 'all' ? '' : value)}
         >
           <SelectTrigger>
-            <SelectValue placeholder="All Categories" />
+            <SelectValue placeholder={t('allCategories')} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All Categories</SelectItem>
+            <SelectItem value="all">{t('allCategories')}</SelectItem>
             {categories.map((category) => (
               <SelectItem key={category.id} value={category.slug}>
-                {category.name}
+                {t(`category.${category.slug}` as any) || category.name}
               </SelectItem>
             ))}
           </SelectContent>
@@ -67,7 +69,7 @@ export function ProductFilters({ categories }: ProductFiltersProps) {
       </div>
 
       <div className="space-y-2">
-        <Label>Sort By</Label>
+        <Label>{t('sortBy')}</Label>
         <Select
           value={`${currentSort}-${currentOrder}`}
           onValueChange={(value) => {
@@ -83,19 +85,19 @@ export function ProductFilters({ categories }: ProductFiltersProps) {
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="createdAt-desc">Newest First</SelectItem>
-            <SelectItem value="createdAt-asc">Oldest First</SelectItem>
-            <SelectItem value="price-asc">Price: Low to High</SelectItem>
-            <SelectItem value="price-desc">Price: High to Low</SelectItem>
-            <SelectItem value="name-asc">Name: A-Z</SelectItem>
-            <SelectItem value="name-desc">Name: Z-A</SelectItem>
+            <SelectItem value="createdAt-desc">{t('newestFirst')}</SelectItem>
+            <SelectItem value="createdAt-asc">{t('oldestFirst')}</SelectItem>
+            <SelectItem value="price-asc">{t('priceLowHigh')}</SelectItem>
+            <SelectItem value="price-desc">{t('priceHighLow')}</SelectItem>
+            <SelectItem value="name-asc">{t('nameAZ')}</SelectItem>
+            <SelectItem value="name-desc">{t('nameZA')}</SelectItem>
           </SelectContent>
         </Select>
       </div>
 
       <div className="grid grid-cols-2 gap-2">
         <div className="space-y-2">
-          <Label>Min Price</Label>
+          <Label>{t('minPrice')}</Label>
           <Input
             type="number"
             placeholder="0"
@@ -104,7 +106,7 @@ export function ProductFilters({ categories }: ProductFiltersProps) {
           />
         </div>
         <div className="space-y-2">
-          <Label>Max Price</Label>
+          <Label>{t('maxPrice')}</Label>
           <Input
             type="number"
             placeholder="999"
@@ -115,7 +117,7 @@ export function ProductFilters({ categories }: ProductFiltersProps) {
       </div>
 
       <Button variant="outline" className="w-full" onClick={clearFilters}>
-        Clear Filters
+        {t('clearFilters')}
       </Button>
     </div>
   )

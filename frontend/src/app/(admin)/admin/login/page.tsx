@@ -6,6 +6,7 @@ import { Form, Input, Button, Card, Typography, message } from 'antd'
 import { UserOutlined, LockOutlined } from '@ant-design/icons'
 import { adminApi } from '@/lib/api'
 import { useAdminStore } from '@/stores/admin.store'
+import { useSettingsStore } from '@/stores/settings.store'
 
 const { Title } = Typography
 
@@ -18,16 +19,17 @@ export default function AdminLoginPage() {
   const [loading, setLoading] = useState(false)
   const router = useRouter()
   const { setAuth } = useAdminStore()
+  const { t } = useSettingsStore()
 
   const onFinish = async (values: LoginForm) => {
     setLoading(true)
     try {
       const { data } = await adminApi.post('/auth/login', values)
       setAuth(data.admin, data.token)
-      message.success('Login successful!')
+      message.success(t('loginSuccessful'))
       router.push('/admin/dashboard')
     } catch (error: any) {
-      message.error(error.response?.data?.error || 'Login failed')
+      message.error(error.response?.data?.error || t('loginFailed'))
     } finally {
       setLoading(false)
     }
@@ -46,9 +48,9 @@ export default function AdminLoginPage() {
       <Card style={{ width: 400, boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
         <div style={{ textAlign: 'center', marginBottom: 24 }}>
           <Title level={2} style={{ marginBottom: 8 }}>
-            Shop-Hub Admin
+            {t('adminPanel')}
           </Title>
-          <p style={{ color: '#666' }}>Sign in to access the admin panel</p>
+          <p style={{ color: '#666' }}>{t('signInToAdmin')}</p>
         </div>
 
         <Form
@@ -60,24 +62,24 @@ export default function AdminLoginPage() {
           <Form.Item
             name="email"
             rules={[
-              { required: true, message: 'Please enter your email' },
-              { type: 'email', message: 'Please enter a valid email' },
+              { required: true, message: t('invalidEmail') },
+              { type: 'email', message: t('invalidEmail') },
             ]}
           >
             <Input
               prefix={<UserOutlined />}
-              placeholder="Email"
+              placeholder={t('email')}
               size="large"
             />
           </Form.Item>
 
           <Form.Item
             name="password"
-            rules={[{ required: true, message: 'Please enter your password' }]}
+            rules={[{ required: true, message: t('passwordRequired') }]}
           >
             <Input.Password
               prefix={<LockOutlined />}
-              placeholder="Password"
+              placeholder={t('password')}
               size="large"
             />
           </Form.Item>
@@ -90,13 +92,13 @@ export default function AdminLoginPage() {
               loading={loading}
               block
             >
-              Sign In
+              {t('signIn')}
             </Button>
           </Form.Item>
         </Form>
 
         <div style={{ textAlign: 'center', color: '#999', fontSize: 12 }}>
-          Demo: admin@shop-hub.com / admin123
+          {t('demo')}: admin@shop-hub.com / admin123
         </div>
       </Card>
     </div>

@@ -15,6 +15,7 @@ import { Separator } from '@/components/ui/separator'
 import { useUserStore } from '@/stores/user.store'
 import { userApi } from '@/lib/user-api'
 import { toast } from '@/hooks/use-toast'
+import { useSettingsStore } from '@/stores/settings.store'
 
 const profileSchema = z.object({
   name: z.string().min(2),
@@ -31,6 +32,7 @@ export default function AccountPage() {
   const router = useRouter()
   const { user, isAuthenticated, logout, updateUser } = useUserStore()
   const [loading, setLoading] = useState(false)
+  const { t } = useSettingsStore()
 
   const {
     register,
@@ -63,10 +65,10 @@ export default function AccountPage() {
     try {
       const response = await userApi.put('/auth/profile', data)
       updateUser(response.data)
-      toast({ title: 'Profile updated successfully!' })
+      toast({ title: t('profileUpdated') })
     } catch {
       toast({
-        title: 'Failed to update profile',
+        title: t('failedToUpdate'),
         variant: 'destructive',
       })
     } finally {
@@ -85,7 +87,7 @@ export default function AccountPage() {
 
   return (
     <div className="container py-8">
-      <h1 className="text-3xl font-bold mb-8">My Account</h1>
+      <h1 className="text-3xl font-bold mb-8">{t('myAccount')}</h1>
 
       <div className="grid md:grid-cols-4 gap-8">
         {/* Sidebar */}
@@ -98,21 +100,21 @@ export default function AccountPage() {
                   className="flex items-center gap-2 p-2 rounded-md bg-muted"
                 >
                   <User className="h-4 w-4" />
-                  Profile
+                  {t('profile')}
                 </Link>
                 <Link
                   href="/account/orders"
                   className="flex items-center gap-2 p-2 rounded-md hover:bg-muted"
                 >
                   <Package className="h-4 w-4" />
-                  Orders
+                  {t('orders')}
                 </Link>
                 <Link
                   href="/account/favorites"
                   className="flex items-center gap-2 p-2 rounded-md hover:bg-muted"
                 >
                   <Heart className="h-4 w-4" />
-                  Favorites
+                  {t('favorites')}
                 </Link>
                 <Separator className="my-2" />
                 <button
@@ -120,7 +122,7 @@ export default function AccountPage() {
                   className="flex items-center gap-2 p-2 rounded-md hover:bg-muted w-full text-left text-destructive"
                 >
                   <LogOut className="h-4 w-4" />
-                  Logout
+                  {t('logout')}
                 </button>
               </nav>
             </CardContent>
@@ -131,56 +133,56 @@ export default function AccountPage() {
         <div className="md:col-span-3">
           <Card>
             <CardHeader>
-              <CardTitle>Profile Information</CardTitle>
-              <CardDescription>Update your personal details</CardDescription>
+              <CardTitle>{t('profileInformation')}</CardTitle>
+              <CardDescription>{t('updateYourDetails')}</CardDescription>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                 <div className="grid md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="name">Full Name</Label>
+                    <Label htmlFor="name">{t('fullName')}</Label>
                     <Input id="name" {...register('name')} />
                     {errors.name && (
                       <p className="text-sm text-destructive">{errors.name.message}</p>
                     )}
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="email">Email</Label>
+                    <Label htmlFor="email">{t('email')}</Label>
                     <Input id="email" value={user.email} disabled />
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="phone">Phone</Label>
+                  <Label htmlFor="phone">{t('phone')}</Label>
                   <Input id="phone" {...register('phone')} placeholder="+1 234 567 8900" />
                 </div>
 
                 <Separator />
 
-                <h3 className="font-semibold">Shipping Address</h3>
+                <h3 className="font-semibold">{t('shippingAddress')}</h3>
 
                 <div className="space-y-2">
-                  <Label htmlFor="address">Address</Label>
+                  <Label htmlFor="address">{t('address')}</Label>
                   <Input id="address" {...register('address')} placeholder="123 Main St" />
                 </div>
 
                 <div className="grid md:grid-cols-3 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="city">City</Label>
+                    <Label htmlFor="city">{t('city')}</Label>
                     <Input id="city" {...register('city')} placeholder="New York" />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="zip">ZIP Code</Label>
+                    <Label htmlFor="zip">{t('zipCode')}</Label>
                     <Input id="zip" {...register('zip')} placeholder="10001" />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="country">Country</Label>
+                    <Label htmlFor="country">{t('country')}</Label>
                     <Input id="country" {...register('country')} placeholder="United States" />
                   </div>
                 </div>
 
                 <Button type="submit" disabled={loading}>
-                  {loading ? 'Saving...' : 'Save Changes'}
+                  {loading ? t('saving') : t('saveChanges')}
                 </Button>
               </form>
             </CardContent>

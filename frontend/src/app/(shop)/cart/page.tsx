@@ -8,9 +8,11 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/componen
 import { Separator } from '@/components/ui/separator'
 import { useCartStore } from '@/stores/cart.store'
 import { formatPrice } from '@/lib/utils'
+import { useSettingsStore } from '@/stores/settings.store'
 
 export default function CartPage() {
   const { items, updateQuantity, removeItem, getTotalPrice, clearCart } = useCartStore()
+  const { t } = useSettingsStore()
 
   const subtotal = getTotalPrice()
   const shipping = subtotal >= 100 ? 0 : 10
@@ -20,12 +22,12 @@ export default function CartPage() {
     return (
       <div className="container py-16 text-center">
         <ShoppingBag className="mx-auto h-16 w-16 text-muted-foreground mb-4" />
-        <h1 className="text-2xl font-bold mb-2">Your cart is empty</h1>
+        <h1 className="text-2xl font-bold mb-2">{t('cartEmpty')}</h1>
         <p className="text-muted-foreground mb-8">
-          Looks like you haven&apos;t added anything to your cart yet.
+          {t('emptyCartDesc')}
         </p>
         <Button asChild>
-          <Link href="/products">Continue Shopping</Link>
+          <Link href="/products">{t('continueShopping')}</Link>
         </Button>
       </div>
     )
@@ -33,7 +35,7 @@ export default function CartPage() {
 
   return (
     <div className="container py-8">
-      <h1 className="text-3xl font-bold mb-8">Shopping Cart</h1>
+      <h1 className="text-3xl font-bold mb-8">{t('shoppingCart')}</h1>
 
       <div className="grid lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-4">
@@ -92,10 +94,10 @@ export default function CartPage() {
 
           <div className="flex justify-between">
             <Button variant="outline" asChild>
-              <Link href="/products">Continue Shopping</Link>
+              <Link href="/products">{t('continueShopping')}</Link>
             </Button>
             <Button variant="destructive" onClick={clearCart}>
-              Clear Cart
+              {t('clearCart')}
             </Button>
           </div>
         </div>
@@ -103,31 +105,31 @@ export default function CartPage() {
         <div className="lg:col-span-1">
           <Card>
             <CardHeader>
-              <CardTitle>Order Summary</CardTitle>
+              <CardTitle>{t('orderSummary')}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Subtotal</span>
+                <span className="text-muted-foreground">{t('subtotal')}</span>
                 <span>{formatPrice(subtotal)}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Shipping</span>
-                <span>{shipping === 0 ? 'Free' : formatPrice(shipping)}</span>
+                <span className="text-muted-foreground">{t('shipping')}</span>
+                <span>{shipping === 0 ? t('free') : formatPrice(shipping)}</span>
               </div>
               {shipping > 0 && (
                 <p className="text-sm text-muted-foreground">
-                  Free shipping on orders over $100
+                  {t('freeShippingOver')}
                 </p>
               )}
               <Separator />
               <div className="flex justify-between text-lg font-bold">
-                <span>Total</span>
+                <span>{t('total')}</span>
                 <span>{formatPrice(total)}</span>
               </div>
             </CardContent>
             <CardFooter>
               <Button asChild className="w-full" size="lg">
-                <Link href="/checkout">Proceed to Checkout</Link>
+                <Link href="/checkout">{t('proceedToCheckout')}</Link>
               </Button>
             </CardFooter>
           </Card>

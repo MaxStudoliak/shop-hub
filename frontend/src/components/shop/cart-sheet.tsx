@@ -15,6 +15,7 @@ import {
 import { Separator } from '@/components/ui/separator'
 import { useCartStore } from '@/stores/cart.store'
 import { formatPrice } from '@/lib/utils'
+import { useSettingsStore } from '@/stores/settings.store'
 
 interface CartSheetProps {
   children: React.ReactNode
@@ -22,18 +23,19 @@ interface CartSheetProps {
 
 export function CartSheet({ children }: CartSheetProps) {
   const { items, updateQuantity, removeItem, getTotalPrice } = useCartStore()
+  const { t } = useSettingsStore()
 
   return (
     <Sheet>
       <SheetTrigger asChild>{children}</SheetTrigger>
       <SheetContent className="flex flex-col">
         <SheetHeader>
-          <SheetTitle>Shopping Cart ({items.length})</SheetTitle>
+          <SheetTitle>{t('shoppingCartItems')} ({items.length})</SheetTitle>
         </SheetHeader>
 
         {items.length === 0 ? (
           <div className="flex-1 flex items-center justify-center">
-            <p className="text-muted-foreground">Your cart is empty</p>
+            <p className="text-muted-foreground">{t('cartEmpty')}</p>
           </div>
         ) : (
           <>
@@ -99,12 +101,12 @@ export function CartSheet({ children }: CartSheetProps) {
             <div className="space-y-4">
               <Separator />
               <div className="flex justify-between text-lg font-semibold">
-                <span>Total</span>
+                <span>{t('total')}</span>
                 <span>{formatPrice(getTotalPrice())}</span>
               </div>
               <SheetFooter>
                 <Button asChild className="w-full">
-                  <Link href="/checkout">Proceed to Checkout</Link>
+                  <Link href="/checkout">{t('proceedToCheckout')}</Link>
                 </Button>
               </SheetFooter>
             </div>

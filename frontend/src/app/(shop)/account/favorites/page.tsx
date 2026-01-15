@@ -11,12 +11,14 @@ import { ProductCard } from '@/components/shop/product-card'
 import { useUserStore } from '@/stores/user.store'
 import { userApi } from '@/lib/user-api'
 import { Product } from '@/types'
+import { useSettingsStore } from '@/stores/settings.store'
 
 export default function FavoritesPage() {
   const router = useRouter()
   const { isAuthenticated, logout } = useUserStore()
   const [favorites, setFavorites] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
+  const { t } = useSettingsStore()
 
   useEffect(() => {
     if (!isAuthenticated()) {
@@ -44,7 +46,7 @@ export default function FavoritesPage() {
 
   return (
     <div className="container py-8">
-      <h1 className="text-3xl font-bold mb-8">My Account</h1>
+      <h1 className="text-3xl font-bold mb-8">{t('myAccount')}</h1>
 
       <div className="grid md:grid-cols-4 gap-8">
         {/* Sidebar */}
@@ -57,21 +59,21 @@ export default function FavoritesPage() {
                   className="flex items-center gap-2 p-2 rounded-md hover:bg-muted"
                 >
                   <User className="h-4 w-4" />
-                  Profile
+                  {t('profile')}
                 </Link>
                 <Link
                   href="/account/orders"
                   className="flex items-center gap-2 p-2 rounded-md hover:bg-muted"
                 >
                   <Package className="h-4 w-4" />
-                  Orders
+                  {t('orders')}
                 </Link>
                 <Link
                   href="/account/favorites"
                   className="flex items-center gap-2 p-2 rounded-md bg-muted"
                 >
                   <Heart className="h-4 w-4" />
-                  Favorites
+                  {t('favorites')}
                 </Link>
                 <Separator className="my-2" />
                 <button
@@ -79,7 +81,7 @@ export default function FavoritesPage() {
                   className="flex items-center gap-2 p-2 rounded-md hover:bg-muted w-full text-left text-destructive"
                 >
                   <LogOut className="h-4 w-4" />
-                  Logout
+                  {t('logout')}
                 </button>
               </nav>
             </CardContent>
@@ -90,17 +92,17 @@ export default function FavoritesPage() {
         <div className="md:col-span-3">
           <Card>
             <CardHeader>
-              <CardTitle>My Favorites</CardTitle>
+              <CardTitle>{t('myFavorites')}</CardTitle>
             </CardHeader>
             <CardContent>
               {loading ? (
-                <div className="text-center py-8">Loading...</div>
+                <div className="text-center py-8">{t('loading')}</div>
               ) : favorites.length === 0 ? (
                 <div className="text-center py-8">
                   <Heart className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                  <p className="text-muted-foreground mb-4">No favorites yet</p>
+                  <p className="text-muted-foreground mb-4">{t('noFavorites')}</p>
                   <Button asChild>
-                    <Link href="/products">Browse Products</Link>
+                    <Link href="/products">{t('browseProducts')}</Link>
                   </Button>
                 </div>
               ) : (

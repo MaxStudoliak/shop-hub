@@ -27,10 +27,14 @@ import { useRouter } from 'next/navigation'
 import { languages, Language } from '@/lib/i18n'
 
 const categories = [
-  { slug: 'electronics', key: 'electronics' as const },
-  { slug: 'clothing', key: 'clothing' as const },
-  { slug: 'home-garden', key: 'homeGarden' as const },
-  { slug: 'sports', key: 'sports' as const },
+  { slug: 'electronics', name: 'Electronics' },
+  { slug: 'clothing', name: 'Clothing' },
+  { slug: 'home-garden', name: 'Home & Garden' },
+  { slug: 'sports', name: 'Sports' },
+  { slug: 'books', name: 'Books' },
+  { slug: 'toys', name: 'Toys' },
+  { slug: 'beauty', name: 'Beauty' },
+  { slug: 'automotive', name: 'Automotive' },
 ]
 
 export function Header() {
@@ -65,22 +69,29 @@ export function Header() {
           <Link href="/" className="flex items-center space-x-2">
             <span className="text-xl font-bold">Shop-Hub</span>
           </Link>
-          <nav className="hidden lg:flex gap-4">
+          <nav className="hidden lg:flex gap-4 items-center">
             <Link
               href="/products"
               className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
             >
               {mounted ? t('allProducts') : 'All Products'}
             </Link>
-            {categories.map((cat) => (
-              <Link
-                key={cat.slug}
-                href={`/products?category=${cat.slug}`}
-                className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-              >
-                {mounted ? t(cat.key) : cat.slug}
-              </Link>
-            ))}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm" className="text-sm font-medium text-muted-foreground hover:text-foreground">
+                  {mounted ? t('category') : 'Categories'}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="w-56">
+                {categories.map((cat) => (
+                  <DropdownMenuItem key={cat.slug} asChild>
+                    <Link href={`/products?category=${cat.slug}`}>
+                      {mounted ? (t(`category.${cat.slug}` as any) || cat.name) : cat.name}
+                    </Link>
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
           </nav>
         </div>
 
@@ -211,7 +222,7 @@ export function Header() {
                     href={`/products?category=${cat.slug}`}
                     className="text-lg font-medium"
                   >
-                    {mounted ? t(cat.key) : cat.slug}
+                    {mounted ? (t(`category.${cat.slug}` as any) || cat.name) : cat.name}
                   </Link>
                 ))}
                 {mounted && isAuthenticated() ? (

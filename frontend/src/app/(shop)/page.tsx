@@ -1,33 +1,37 @@
+'use client'
+
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { ProductCard } from '@/components/shop/product-card'
 import { api } from '@/lib/api'
 import { Product, Category } from '@/types'
+import { useSettingsStore } from '@/stores/settings.store'
 
-async function getFeaturedProducts() {
-  try {
-    const { data } = await api.get('/products?limit=8')
-    return data.products as Product[]
-  } catch {
-    return []
-  }
-}
+export default function HomePage() {
+  const [products, setProducts] = useState<Product[]>([])
+  const [categories, setCategories] = useState<Category[]>([])
+  const [loading, setLoading] = useState(true)
+  const { t } = useSettingsStore()
 
-async function getCategories() {
-  try {
-    const { data } = await api.get('/categories')
-    return data as Category[]
-  } catch {
-    return []
-  }
-}
-
-export default async function HomePage() {
-  const [products, categories] = await Promise.all([
-    getFeaturedProducts(),
-    getCategories(),
-  ])
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [productsRes, categoriesRes] = await Promise.all([
+          api.get('/products?limit=8'),
+          api.get('/categories'),
+        ])
+        setProducts(productsRes.data.products)
+        setCategories(categoriesRes.data)
+      } catch {
+        console.error('Failed to fetch data')
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchData()
+  }, [])
 
   return (
     <div>
@@ -36,18 +40,17 @@ export default async function HomePage() {
         <div className="container py-24 md:py-32">
           <div className="max-w-2xl">
             <h1 className="text-4xl md:text-6xl font-bold mb-6">
-              Welcome to Shop-Hub
+              {t('heroTitle')}
             </h1>
             <p className="text-lg md:text-xl text-gray-300 mb-8">
-              Discover amazing products at unbeatable prices. Quality, style, and
-              convenience all in one place.
+              {t('heroSubtitleExtended')}
             </p>
             <div className="flex gap-4">
               <Button asChild size="lg">
-                <Link href="/products">Shop Now</Link>
+                <Link href="/products">{t('shopNow')}</Link>
               </Button>
-              <Button asChild variant="outline" size="lg">
-                <Link href="/products?sort=createdAt&order=desc">New Arrivals</Link>
+              <Button asChild variant="secondary" size="lg">
+                <Link href="/products?category=electronics">{t('exploreElectronics')}</Link>
               </Button>
             </div>
           </div>
@@ -56,9 +59,9 @@ export default async function HomePage() {
 
       {/* Categories Section */}
       <section className="container py-16">
-        <h2 className="text-2xl md:text-3xl font-bold mb-8">Shop by Category</h2>
+        <h2 className="text-2xl md:text-3xl font-bold mb-8">{t('shopByCategory')}</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {categories.slice(0, 4).map((category) => (
+          {categories.slice(0, 8).map((category) => (
             <Link
               key={category.id}
               href={`/products?category=${category.slug}`}
@@ -67,7 +70,7 @@ export default async function HomePage() {
               {category.image ? (
                 <Image
                   src={category.image}
-                  alt={category.name}
+                  alt={t(`category.${category.slug}` as any) || category.name}
                   fill
                   className="object-cover transition-transform group-hover:scale-105"
                 />
@@ -75,7 +78,7 @@ export default async function HomePage() {
                 <div className="w-full h-full bg-muted" />
               )}
               <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                <h3 className="text-white text-xl font-semibold">{category.name}</h3>
+                <h3 className="text-white text-xl font-semibold">{t(`category.${category.slug}` as any) || category.name}</h3>
               </div>
             </Link>
           ))}
@@ -85,16 +88,20 @@ export default async function HomePage() {
       {/* Featured Products Section */}
       <section className="container py-16 bg-muted/50">
         <div className="flex justify-between items-center mb-8">
-          <h2 className="text-2xl md:text-3xl font-bold">Featured Products</h2>
+          <h2 className="text-2xl md:text-3xl font-bold">{t('featuredProducts')}</h2>
           <Button asChild variant="outline">
-            <Link href="/products">View All</Link>
+            <Link href="/products">{t('viewAll')}</Link>
           </Button>
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-          {products.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-        </div>
+        {loading ? (
+          <div className="text-center py-8">{t('loading')}</div>
+        ) : (
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+            {products.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+        )}
       </section>
 
       {/* Features Section */}
@@ -116,9 +123,9 @@ export default async function HomePage() {
                 />
               </svg>
             </div>
-            <h3 className="text-lg font-semibold mb-2">Quality Products</h3>
+            <h3 className="text-lg font-semibold mb-2">{t('qualityProducts')}</h3>
             <p className="text-muted-foreground">
-              We source only the best products from trusted suppliers.
+              {t('qualityProductsDesc')}
             </p>
           </div>
           <div className="text-center">
@@ -137,9 +144,9 @@ export default async function HomePage() {
                 />
               </svg>
             </div>
-            <h3 className="text-lg font-semibold mb-2">Best Prices</h3>
+            <h3 className="text-lg font-semibold mb-2">{t('bestPrices')}</h3>
             <p className="text-muted-foreground">
-              Competitive prices and regular discounts on all products.
+              {t('bestPricesDesc')}
             </p>
           </div>
           <div className="text-center">
@@ -158,9 +165,9 @@ export default async function HomePage() {
                 />
               </svg>
             </div>
-            <h3 className="text-lg font-semibold mb-2">Fast Shipping</h3>
+            <h3 className="text-lg font-semibold mb-2">{t('fastShipping')}</h3>
             <p className="text-muted-foreground">
-              Free shipping on orders over $100. Quick delivery guaranteed.
+              {t('fastShippingDesc')}
             </p>
           </div>
         </div>

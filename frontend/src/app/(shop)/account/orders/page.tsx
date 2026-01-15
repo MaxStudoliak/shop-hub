@@ -13,6 +13,7 @@ import { useUserStore } from '@/stores/user.store'
 import { userApi } from '@/lib/user-api'
 import { Order, Pagination } from '@/types'
 import { formatPrice, formatDate } from '@/lib/utils'
+import { useSettingsStore } from '@/stores/settings.store'
 
 export default function OrdersPage() {
   const router = useRouter()
@@ -20,6 +21,7 @@ export default function OrdersPage() {
   const [orders, setOrders] = useState<Order[]>([])
   const [pagination, setPagination] = useState<Pagination | null>(null)
   const [loading, setLoading] = useState(true)
+  const { t } = useSettingsStore()
 
   useEffect(() => {
     if (!isAuthenticated()) {
@@ -56,7 +58,7 @@ export default function OrdersPage() {
 
   return (
     <div className="container py-8">
-      <h1 className="text-3xl font-bold mb-8">My Account</h1>
+      <h1 className="text-3xl font-bold mb-8">{t('myAccount')}</h1>
 
       <div className="grid md:grid-cols-4 gap-8">
         {/* Sidebar */}
@@ -69,21 +71,21 @@ export default function OrdersPage() {
                   className="flex items-center gap-2 p-2 rounded-md hover:bg-muted"
                 >
                   <User className="h-4 w-4" />
-                  Profile
+                  {t('profile')}
                 </Link>
                 <Link
                   href="/account/orders"
                   className="flex items-center gap-2 p-2 rounded-md bg-muted"
                 >
                   <Package className="h-4 w-4" />
-                  Orders
+                  {t('orders')}
                 </Link>
                 <Link
                   href="/account/favorites"
                   className="flex items-center gap-2 p-2 rounded-md hover:bg-muted"
                 >
                   <Heart className="h-4 w-4" />
-                  Favorites
+                  {t('favorites')}
                 </Link>
                 <Separator className="my-2" />
                 <button
@@ -91,7 +93,7 @@ export default function OrdersPage() {
                   className="flex items-center gap-2 p-2 rounded-md hover:bg-muted w-full text-left text-destructive"
                 >
                   <LogOut className="h-4 w-4" />
-                  Logout
+                  {t('logout')}
                 </button>
               </nav>
             </CardContent>
@@ -102,17 +104,17 @@ export default function OrdersPage() {
         <div className="md:col-span-3">
           <Card>
             <CardHeader>
-              <CardTitle>Order History</CardTitle>
+              <CardTitle>{t('orderHistory')}</CardTitle>
             </CardHeader>
             <CardContent>
               {loading ? (
-                <div className="text-center py-8">Loading...</div>
+                <div className="text-center py-8">{t('loading')}</div>
               ) : orders.length === 0 ? (
                 <div className="text-center py-8">
                   <Package className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                  <p className="text-muted-foreground mb-4">No orders yet</p>
+                  <p className="text-muted-foreground mb-4">{t('noOrdersYet')}</p>
                   <Button asChild>
-                    <Link href="/products">Start Shopping</Link>
+                    <Link href="/products">{t('startShopping')}</Link>
                   </Button>
                 </div>
               ) : (

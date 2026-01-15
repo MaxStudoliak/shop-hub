@@ -10,6 +10,7 @@ import { Product } from '@/types'
 import { formatPrice } from '@/lib/utils'
 import { useCartStore } from '@/stores/cart.store'
 import { toast } from '@/hooks/use-toast'
+import { useSettingsStore } from '@/stores/settings.store'
 
 interface ProductCardProps {
   product: Product
@@ -17,6 +18,7 @@ interface ProductCardProps {
 
 export function ProductCard({ product }: ProductCardProps) {
   const addItem = useCartStore((state) => state.addItem)
+  const { t } = useSettingsStore()
 
   const price = typeof product.price === 'string' ? parseFloat(product.price) : product.price
   const comparePrice = product.comparePrice
@@ -40,8 +42,8 @@ export function ProductCard({ product }: ProductCardProps) {
       stock: product.stock,
     })
     toast({
-      title: 'Added to cart',
-      description: `${product.name} has been added to your cart.`,
+      title: t('addedToCartMsg'),
+      description: `${product.name} ${t('addedToCartDesc')}.`,
     })
   }
 
@@ -58,7 +60,7 @@ export function ProductCard({ product }: ProductCardProps) {
             />
           ) : (
             <div className="w-full h-full bg-muted flex items-center justify-center">
-              <span className="text-muted-foreground">No image</span>
+              <span className="text-muted-foreground">{t('noImage')}</span>
             </div>
           )}
           {hasDiscount && (
@@ -68,17 +70,17 @@ export function ProductCard({ product }: ProductCardProps) {
           )}
           {product.stock <= 5 && product.stock > 0 && (
             <Badge variant="warning" className="absolute top-2 right-2">
-              Low stock
+              {t('lowStock')}
             </Badge>
           )}
           {product.stock === 0 && (
             <Badge variant="secondary" className="absolute top-2 right-2">
-              Out of stock
+              {t('outOfStock')}
             </Badge>
           )}
         </div>
         <CardContent className="p-4">
-          <p className="text-xs text-muted-foreground mb-1">{product.category.name}</p>
+          <p className="text-xs text-muted-foreground mb-1">{t(`category.${product.category.slug}` as any) || product.category.name}</p>
           <h3 className="font-semibold text-sm line-clamp-2 mb-2">{product.name}</h3>
           <div className="flex items-center gap-2">
             <span className="font-bold">{formatPrice(price)}</span>
@@ -96,7 +98,7 @@ export function ProductCard({ product }: ProductCardProps) {
             disabled={product.stock === 0}
           >
             <ShoppingCart className="mr-2 h-4 w-4" />
-            Add to Cart
+            {t('addToCart')}
           </Button>
         </CardFooter>
       </Card>
