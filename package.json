@@ -1,0 +1,27 @@
+{
+  "name": "shop-hub",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "frontend",
+    "backend"
+  ],
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "start": "turbo run start",
+    "db:generate": "yarn workspace backend prisma generate",
+    "db:push": "yarn workspace backend prisma db push",
+    "db:migrate": "yarn workspace backend prisma migrate dev",
+    "db:seed": "yarn workspace backend prisma db seed",
+    "db:studio": "yarn workspace backend prisma studio"
+  },
+  "devDependencies": {
+    "turbo": "^2.0.0"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "packageManager": "yarn@1.22.22"
+}

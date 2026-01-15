@@ -1,0 +1,351 @@
+export const languages = {
+  uk: 'Українська',
+  ru: 'Русский',
+  en: 'English',
+} as const
+
+export type Language = keyof typeof languages
+
+export const translations = {
+  uk: {
+    // Header
+    allProducts: 'Всі товари',
+    electronics: 'Електроніка',
+    clothing: 'Одяг',
+    homeGarden: 'Дім і сад',
+    sports: 'Спорт',
+    searchPlaceholder: 'Пошук товарів...',
+    signIn: 'Увійти',
+    myAccount: 'Мій акаунт',
+    myOrders: 'Мої замовлення',
+    favorites: 'Обране',
+    logout: 'Вийти',
+    menu: 'Меню',
+
+    // Products
+    products: 'Товари',
+    product: 'Товар',
+    noProducts: 'Товарів не знайдено',
+    clearFilters: 'Очистити фільтри',
+    filters: 'Фільтри',
+    category: 'Категорія',
+    allCategories: 'Всі категорії',
+    sortBy: 'Сортувати',
+    newestFirst: 'Спочатку нові',
+    oldestFirst: 'Спочатку старі',
+    priceLowHigh: 'Ціна: від низької до високої',
+    priceHighLow: 'Ціна: від високої до низької',
+    nameAZ: 'Назва: А-Я',
+    nameZA: 'Назва: Я-А',
+    minPrice: 'Мін. ціна',
+    maxPrice: 'Макс. ціна',
+
+    // Product detail
+    backToProducts: 'Назад до товарів',
+    description: 'Опис',
+    availability: 'Наявність',
+    inStock: 'В наявності',
+    outOfStock: 'Немає в наявності',
+    available: 'доступно',
+    quantity: 'Кількість',
+    addToCart: 'Додати в кошик',
+    addedToCart: 'Додано в кошик',
+
+    // Cart
+    cart: 'Кошик',
+    yourCart: 'Ваш кошик',
+    emptyCart: 'Кошик порожній',
+    continueShopping: 'Продовжити покупки',
+    subtotal: 'Підсумок',
+    shipping: 'Доставка',
+    total: 'Всього',
+    checkout: 'Оформити замовлення',
+    remove: 'Видалити',
+
+    // Checkout
+    orderSummary: 'Підсумок замовлення',
+    shippingInfo: 'Інформація про доставку',
+    contactInfo: 'Контактна інформація',
+    email: 'Email',
+    phone: 'Телефон',
+    fullName: 'Повне ім\'я',
+    address: 'Адреса',
+    city: 'Місто',
+    zipCode: 'Поштовий індекс',
+    country: 'Країна',
+    payment: 'Оплата',
+    placeOrder: 'Оформити замовлення',
+    orderPlaced: 'Замовлення оформлено',
+    orderNumber: 'Номер замовлення',
+    thankYou: 'Дякуємо за замовлення!',
+
+    // Auth
+    login: 'Вхід',
+    register: 'Реєстрація',
+    password: 'Пароль',
+    confirmPassword: 'Підтвердіть пароль',
+    noAccount: 'Немає акаунту?',
+    haveAccount: 'Вже є акаунт?',
+    createAccount: 'Створити акаунт',
+
+    // Account
+    profile: 'Профіль',
+    orderHistory: 'Історія замовлень',
+    saveChanges: 'Зберегти зміни',
+
+    // Reviews
+    reviews: 'Відгуки',
+    writeReview: 'Написати відгук',
+    yourRating: 'Ваша оцінка',
+    yourReview: 'Ваш відгук',
+    submitReview: 'Надіслати відгук',
+    noReviews: 'Відгуків поки немає',
+
+    // Common
+    loading: 'Завантаження...',
+    error: 'Помилка',
+    success: 'Успіх',
+    cancel: 'Скасувати',
+    save: 'Зберегти',
+    delete: 'Видалити',
+    edit: 'Редагувати',
+    previous: 'Попередня',
+    next: 'Наступна',
+
+    // Home
+    heroTitle: 'Ласкаво просимо до Shop-Hub',
+    heroSubtitle: 'Знайдіть найкращі товари за найкращими цінами',
+    shopNow: 'Купити зараз',
+    featuredProducts: 'Популярні товари',
+    viewAll: 'Переглянути всі',
+    shopByCategory: 'Категорії',
+  },
+  ru: {
+    // Header
+    allProducts: 'Все товары',
+    electronics: 'Электроника',
+    clothing: 'Одежда',
+    homeGarden: 'Дом и сад',
+    sports: 'Спорт',
+    searchPlaceholder: 'Поиск товаров...',
+    signIn: 'Войти',
+    myAccount: 'Мой аккаунт',
+    myOrders: 'Мои заказы',
+    favorites: 'Избранное',
+    logout: 'Выйти',
+    menu: 'Меню',
+
+    // Products
+    products: 'Товары',
+    product: 'Товар',
+    noProducts: 'Товаров не найдено',
+    clearFilters: 'Очистить фильтры',
+    filters: 'Фильтры',
+    category: 'Категория',
+    allCategories: 'Все категории',
+    sortBy: 'Сортировать',
+    newestFirst: 'Сначала новые',
+    oldestFirst: 'Сначала старые',
+    priceLowHigh: 'Цена: от низкой к высокой',
+    priceHighLow: 'Цена: от высокой к низкой',
+    nameAZ: 'Название: А-Я',
+    nameZA: 'Название: Я-А',
+    minPrice: 'Мин. цена',
+    maxPrice: 'Макс. цена',
+
+    // Product detail
+    backToProducts: 'Назад к товарам',
+    description: 'Описание',
+    availability: 'Наличие',
+    inStock: 'В наличии',
+    outOfStock: 'Нет в наличии',
+    available: 'доступно',
+    quantity: 'Количество',
+    addToCart: 'Добавить в корзину',
+    addedToCart: 'Добавлено в корзину',
+
+    // Cart
+    cart: 'Корзина',
+    yourCart: 'Ваша корзина',
+    emptyCart: 'Корзина пуста',
+    continueShopping: 'Продолжить покупки',
+    subtotal: 'Подытог',
+    shipping: 'Доставка',
+    total: 'Итого',
+    checkout: 'Оформить заказ',
+    remove: 'Удалить',
+
+    // Checkout
+    orderSummary: 'Сводка заказа',
+    shippingInfo: 'Информация о доставке',
+    contactInfo: 'Контактная информация',
+    email: 'Email',
+    phone: 'Телефон',
+    fullName: 'Полное имя',
+    address: 'Адрес',
+    city: 'Город',
+    zipCode: 'Почтовый индекс',
+    country: 'Страна',
+    payment: 'Оплата',
+    placeOrder: 'Оформить заказ',
+    orderPlaced: 'Заказ оформлен',
+    orderNumber: 'Номер заказа',
+    thankYou: 'Спасибо за заказ!',
+
+    // Auth
+    login: 'Вход',
+    register: 'Регистрация',
+    password: 'Пароль',
+    confirmPassword: 'Подтвердите пароль',
+    noAccount: 'Нет аккаунта?',
+    haveAccount: 'Уже есть аккаунт?',
+    createAccount: 'Создать аккаунт',
+
+    // Account
+    profile: 'Профиль',
+    orderHistory: 'История заказов',
+    saveChanges: 'Сохранить изменения',
+
+    // Reviews
+    reviews: 'Отзывы',
+    writeReview: 'Написать отзыв',
+    yourRating: 'Ваша оценка',
+    yourReview: 'Ваш отзыв',
+    submitReview: 'Отправить отзыв',
+    noReviews: 'Отзывов пока нет',
+
+    // Common
+    loading: 'Загрузка...',
+    error: 'Ошибка',
+    success: 'Успех',
+    cancel: 'Отмена',
+    save: 'Сохранить',
+    delete: 'Удалить',
+    edit: 'Редактировать',
+    previous: 'Предыдущая',
+    next: 'Следующая',
+
+    // Home
+    heroTitle: 'Добро пожаловать в Shop-Hub',
+    heroSubtitle: 'Найдите лучшие товары по лучшим ценам',
+    shopNow: 'Купить сейчас',
+    featuredProducts: 'Популярные товары',
+    viewAll: 'Смотреть все',
+    shopByCategory: 'Категории',
+  },
+  en: {
+    // Header
+    allProducts: 'All Products',
+    electronics: 'Electronics',
+    clothing: 'Clothing',
+    homeGarden: 'Home & Garden',
+    sports: 'Sports',
+    searchPlaceholder: 'Search products...',
+    signIn: 'Sign In',
+    myAccount: 'My Account',
+    myOrders: 'My Orders',
+    favorites: 'Favorites',
+    logout: 'Logout',
+    menu: 'Menu',
+
+    // Products
+    products: 'Products',
+    product: 'Product',
+    noProducts: 'No products found',
+    clearFilters: 'Clear Filters',
+    filters: 'Filters',
+    category: 'Category',
+    allCategories: 'All Categories',
+    sortBy: 'Sort By',
+    newestFirst: 'Newest First',
+    oldestFirst: 'Oldest First',
+    priceLowHigh: 'Price: Low to High',
+    priceHighLow: 'Price: High to Low',
+    nameAZ: 'Name: A-Z',
+    nameZA: 'Name: Z-A',
+    minPrice: 'Min Price',
+    maxPrice: 'Max Price',
+
+    // Product detail
+    backToProducts: 'Back to Products',
+    description: 'Description',
+    availability: 'Availability',
+    inStock: 'In Stock',
+    outOfStock: 'Out of Stock',
+    available: 'available',
+    quantity: 'Quantity',
+    addToCart: 'Add to Cart',
+    addedToCart: 'Added to cart',
+
+    // Cart
+    cart: 'Cart',
+    yourCart: 'Your Cart',
+    emptyCart: 'Your cart is empty',
+    continueShopping: 'Continue Shopping',
+    subtotal: 'Subtotal',
+    shipping: 'Shipping',
+    total: 'Total',
+    checkout: 'Checkout',
+    remove: 'Remove',
+
+    // Checkout
+    orderSummary: 'Order Summary',
+    shippingInfo: 'Shipping Information',
+    contactInfo: 'Contact Information',
+    email: 'Email',
+    phone: 'Phone',
+    fullName: 'Full Name',
+    address: 'Address',
+    city: 'City',
+    zipCode: 'ZIP Code',
+    country: 'Country',
+    payment: 'Payment',
+    placeOrder: 'Place Order',
+    orderPlaced: 'Order Placed',
+    orderNumber: 'Order Number',
+    thankYou: 'Thank you for your order!',
+
+    // Auth
+    login: 'Login',
+    register: 'Register',
+    password: 'Password',
+    confirmPassword: 'Confirm Password',
+    noAccount: "Don't have an account?",
+    haveAccount: 'Already have an account?',
+    createAccount: 'Create Account',
+
+    // Account
+    profile: 'Profile',
+    orderHistory: 'Order History',
+    saveChanges: 'Save Changes',
+
+    // Reviews
+    reviews: 'Reviews',
+    writeReview: 'Write a Review',
+    yourRating: 'Your Rating',
+    yourReview: 'Your Review',
+    submitReview: 'Submit Review',
+    noReviews: 'No reviews yet',
+
+    // Common
+    loading: 'Loading...',
+    error: 'Error',
+    success: 'Success',
+    cancel: 'Cancel',
+    save: 'Save',
+    delete: 'Delete',
+    edit: 'Edit',
+    previous: 'Previous',
+    next: 'Next',
+
+    // Home
+    heroTitle: 'Welcome to Shop-Hub',
+    heroSubtitle: 'Discover the best products at the best prices',
+    shopNow: 'Shop Now',
+    featuredProducts: 'Featured Products',
+    viewAll: 'View All',
+    shopByCategory: 'Shop by Category',
+  },
+}
+
+export type TranslationKey = keyof typeof translations.en
