@@ -7,6 +7,7 @@ import { useUserStore } from '@/stores/user.store'
 import { userApi } from '@/lib/user-api'
 import { toast } from '@/hooks/use-toast'
 import { cn } from '@/lib/utils'
+import { useSettingsStore } from '@/stores/settings.store'
 
 interface FavoriteButtonProps {
   productId: string
@@ -16,6 +17,7 @@ interface FavoriteButtonProps {
 
 export function FavoriteButton({ productId, className, variant = 'icon' }: FavoriteButtonProps) {
   const { isAuthenticated } = useUserStore()
+  const { t } = useSettingsStore()
   const [isFavorite, setIsFavorite] = useState(false)
   const [loading, setLoading] = useState(false)
 
@@ -37,8 +39,8 @@ export function FavoriteButton({ productId, className, variant = 'icon' }: Favor
   const toggleFavorite = async () => {
     if (!isAuthenticated()) {
       toast({
-        title: 'Please login',
-        description: 'You need to be logged in to add favorites',
+        title: t('pleaseLogin'),
+        description: t('needLoginFavorites'),
       })
       return
     }
@@ -48,11 +50,11 @@ export function FavoriteButton({ productId, className, variant = 'icon' }: Favor
       if (isFavorite) {
         await userApi.delete(`/favorites/${productId}`)
         setIsFavorite(false)
-        toast({ title: 'Removed from favorites' })
+        toast({ title: t('removedFromFavorites') })
       } else {
         await userApi.post(`/favorites/${productId}`)
         setIsFavorite(true)
-        toast({ title: 'Added to favorites' })
+        toast({ title: t('addedToFavorites') })
       }
     } catch {
       toast({
@@ -76,7 +78,7 @@ export function FavoriteButton({ productId, className, variant = 'icon' }: Favor
         <Heart
           className={cn('h-4 w-4 mr-2', isFavorite && 'fill-red-500 text-red-500')}
         />
-        {isFavorite ? 'Remove from Favorites' : 'Add to Favorites'}
+        {isFavorite ? t('removeFromFavorites') : t('addToFavorites')}
       </Button>
     )
   }

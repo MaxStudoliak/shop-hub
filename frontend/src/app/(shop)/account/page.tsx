@@ -86,32 +86,32 @@ export default function AccountPage() {
   }
 
   return (
-    <div className="container py-8">
-      <h1 className="text-3xl font-bold mb-8">{t('myAccount')}</h1>
+    <div className="container py-6 px-4 md:py-8">
+      <h1 className="text-2xl md:text-3xl font-bold mb-6 md:mb-8">{t('myAccount')}</h1>
 
-      <div className="grid md:grid-cols-4 gap-8">
+      <div className="grid md:grid-cols-4 gap-6 md:gap-8">
         {/* Sidebar */}
         <div className="md:col-span-1">
           <Card>
-            <CardContent className="p-4">
-              <nav className="space-y-2">
+            <CardContent className="p-3 md:p-4">
+              <nav className="space-y-1 md:space-y-2">
                 <Link
                   href="/account"
-                  className="flex items-center gap-2 p-2 rounded-md bg-muted"
+                  className="flex items-center gap-2 p-2 md:p-2.5 rounded-md bg-muted text-sm md:text-base"
                 >
                   <User className="h-4 w-4" />
                   {t('profile')}
                 </Link>
                 <Link
                   href="/account/orders"
-                  className="flex items-center gap-2 p-2 rounded-md hover:bg-muted"
+                  className="flex items-center gap-2 p-2 md:p-2.5 rounded-md hover:bg-muted text-sm md:text-base"
                 >
                   <Package className="h-4 w-4" />
                   {t('orders')}
                 </Link>
                 <Link
                   href="/account/favorites"
-                  className="flex items-center gap-2 p-2 rounded-md hover:bg-muted"
+                  className="flex items-center gap-2 p-2 md:p-2.5 rounded-md hover:bg-muted text-sm md:text-base"
                 >
                   <Heart className="h-4 w-4" />
                   {t('favorites')}
@@ -119,7 +119,7 @@ export default function AccountPage() {
                 <Separator className="my-2" />
                 <button
                   onClick={handleLogout}
-                  className="flex items-center gap-2 p-2 rounded-md hover:bg-muted w-full text-left text-destructive"
+                  className="flex items-center gap-2 p-2 md:p-2.5 rounded-md hover:bg-muted w-full text-left text-destructive text-sm md:text-base"
                 >
                   <LogOut className="h-4 w-4" />
                   {t('logout')}
@@ -133,15 +133,15 @@ export default function AccountPage() {
         <div className="md:col-span-3">
           <Card>
             <CardHeader>
-              <CardTitle>{t('profileInformation')}</CardTitle>
-              <CardDescription>{t('updateYourDetails')}</CardDescription>
+              <CardTitle className="text-lg md:text-xl">{t('profileInformation')}</CardTitle>
+              <CardDescription className="text-sm">{t('updateYourDetails')}</CardDescription>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                 <div className="grid md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="name">{t('fullName')}</Label>
-                    <Input id="name" {...register('name')} />
+                    <Label htmlFor="name" className="text-sm">{t('fullName')}</Label>
+                    <Input id="name" {...register('name')} className="h-10" />
                     {errors.name && (
                       <p className="text-sm text-destructive">{errors.name.message}</p>
                     )}

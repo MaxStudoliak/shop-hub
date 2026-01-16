@@ -21,6 +21,8 @@ interface SettingsStore {
     language: Language;
     currency: Currency;
     theme: 'light' | 'dark';
+    hasHydrated: boolean;
+    setHasHydrated: (state: boolean) => void;
     setLanguage: (lang: Language) => void;
     setCurrency: (currency: Currency) => void;
     setTheme: (theme: 'light' | 'dark') => void;
@@ -35,6 +37,9 @@ export const useSettingsStore = create<SettingsStore>()(
             language: 'uk',
             currency: 'UAH',
             theme: 'light',
+            hasHydrated: false,
+
+            setHasHydrated: (state: boolean) => set({ hasHydrated: state }),
 
             setLanguage: language => set({ language }),
 
@@ -78,8 +83,11 @@ export const useSettingsStore = create<SettingsStore>()(
         {
             name: 'settings-storage',
             onRehydrateStorage: () => state => {
-                if (state && typeof window !== 'undefined') {
-                    document.documentElement.classList.toggle('dark', state.theme === 'dark');
+                if (state) {
+                    state.setHasHydrated(true);
+                    if (typeof window !== 'undefined') {
+                        document.documentElement.classList.toggle('dark', state.theme === 'dark');
+                    }
                 }
             },
         },

@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button'
 import {
   Sheet,
   SheetContent,
+  SheetDescription,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
@@ -22,21 +23,26 @@ interface CartSheetProps {
 }
 
 export function CartSheet({ children }: CartSheetProps) {
-  const { items, updateQuantity, removeItem, getTotalPrice } = useCartStore()
-  const { t, formatPrice } = useSettingsStore()
+  const { items, updateQuantity, removeItem, getTotalPrice, hasHydrated } = useCartStore()
+  const { t, formatPrice, hasHydrated: settingsHasHydrated } = useSettingsStore()
   const [open, setOpen] = useState(false)
+
+  const mounted = hasHydrated && settingsHasHydrated
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>{children}</SheetTrigger>
       <SheetContent className="flex flex-col">
         <SheetHeader>
-          <SheetTitle>{t('shoppingCartItems')} ({items.length})</SheetTitle>
+          <SheetTitle>{mounted ? t('shoppingCartItems') : 'Cart'} ({items.length})</SheetTitle>
+          <SheetDescription className="sr-only">
+            {mounted ? t('cartDescription') || 'View and manage your shopping cart items' : 'View and manage your shopping cart items'}
+          </SheetDescription>
         </SheetHeader>
 
         {items.length === 0 ? (
           <div className="flex-1 flex items-center justify-center">
-            <p className="text-muted-foreground">{t('cartEmpty')}</p>
+            <p className="text-muted-foreground">{mounted ? t('cartEmpty') : 'Cart is empty'}</p>
           </div>
         ) : (
           <>
@@ -49,6 +55,7 @@ export function CartSheet({ children }: CartSheetProps) {
                         src={item.image}
                         alt={item.name}
                         fill
+                        sizes="80px"
                         className="object-cover"
                       />
                     </div>
@@ -102,12 +109,12 @@ export function CartSheet({ children }: CartSheetProps) {
             <div className="space-y-4">
               <Separator />
               <div className="flex justify-between text-lg font-semibold">
-                <span>{t('total')}</span>
-                <span>{formatPrice(getTotalPrice())}</span>
+                <span>{mounted ? t('total') : 'Total'}</span>
+                <span>{mounted ? formatPrice(getTotalPrice()) : getTotalPrice().toFixed(2)}</span>
               </div>
               <SheetFooter>
                 <Button asChild className="w-full" onClick={() => setOpen(false)}>
-                  <Link href="/checkout">{t('proceedToCheckout')}</Link>
+                  <Link href="/checkout">{mounted ? t('proceedToCheckout') : 'Checkout'}</Link>
                 </Button>
               </SheetFooter>
             </div>

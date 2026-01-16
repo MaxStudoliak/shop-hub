@@ -12,6 +12,7 @@ import { useUserStore } from '@/stores/user.store'
 import { Review, ReviewsResponse } from '@/types'
 import { formatDate } from '@/lib/utils'
 import { toast } from '@/hooks/use-toast'
+import { useSettingsStore } from '@/stores/settings.store'
 
 interface ProductReviewsProps {
   productId: string
@@ -19,6 +20,7 @@ interface ProductReviewsProps {
 
 export function ProductReviews({ productId }: ProductReviewsProps) {
   const { isAuthenticated, user } = useUserStore()
+  const { t } = useSettingsStore()
   const [reviews, setReviews] = useState<Review[]>([])
   const [stats, setStats] = useState({ averageRating: 0, totalReviews: 0 })
   const [loading, setLoading] = useState(true)
@@ -54,16 +56,16 @@ export function ProductReviews({ productId }: ProductReviewsProps) {
 
     if (!isAuthenticated()) {
       toast({
-        title: 'Please login',
-        description: 'You need to be logged in to leave a review',
+        title: t('pleaseLogin'),
+        description: t('needLoginReview'),
       })
       return
     }
 
     if (comment.length < 10) {
       toast({
-        title: 'Review too short',
-        description: 'Please write at least 10 characters',
+        title: t('reviewTooShort'),
+        description: t('reviewMinLength'),
         variant: 'destructive',
       })
       return
@@ -73,18 +75,18 @@ export function ProductReviews({ productId }: ProductReviewsProps) {
     try {
       if (userReview) {
         await userApi.put(`/reviews/${userReview.id}`, { rating, comment })
-        toast({ title: 'Review updated!' })
+        toast({ title: t('reviewSubmitted') })
       } else {
         await userApi.post(`/reviews/product/${productId}`, { rating, comment })
-        toast({ title: 'Review submitted!' })
+        toast({ title: t('reviewSubmitted') })
       }
       setShowForm(false)
       setComment('')
       fetchReviews()
     } catch (error: any) {
       toast({
-        title: 'Error',
-        description: error.response?.data?.error || 'Failed to submit review',
+        title: t('error'),
+        description: error.response?.data?.error || t('reviewSubmitError'),
         variant: 'destructive',
       })
     } finally {
@@ -97,13 +99,13 @@ export function ProductReviews({ productId }: ProductReviewsProps) {
 
     try {
       await userApi.delete(`/reviews/${userReview.id}`)
-      toast({ title: 'Review deleted' })
+      toast({ title: t('reviewDeleted') })
       setUserReview(null)
       fetchReviews()
     } catch {
       toast({
-        title: 'Error',
-        description: 'Failed to delete review',
+        title: t('error'),
+        description: t('reviewDeleteError'),
         variant: 'destructive',
       })
     }
@@ -114,9 +116,8 @@ export function ProductReviews({ productId }: ProductReviewsProps) {
       {[1, 2, 3, 4, 5].map((star) => (
         <Star
           key={star}
-          className={`h-5 w-5 ${
-            star <= value ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'
-          } ${onChange ? 'cursor-pointer' : ''}`}
+          className={`h-5 w-5 ${star <= value ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'
+            } ${onChange ? 'cursor-pointer' : ''}`}
           onClick={() => onChange?.(star)}
         />
       ))}
@@ -127,10 +128,10 @@ export function ProductReviews({ productId }: ProductReviewsProps) {
     <Card className="mt-8">
       <CardHeader>
         <div className="flex justify-between items-center">
-          <CardTitle>Customer Reviews</CardTitle>
+          <CardTitle>{t('customerReviews')}</CardTitle>
           {isAuthenticated() && !userReview && (
             <Button onClick={() => setShowForm(!showForm)}>
-              Write a Review
+              {t('writeReview')}
             </Button>
           )}
         </div>
@@ -142,7 +143,7 @@ export function ProductReviews({ productId }: ProductReviewsProps) {
           <div>
             <StarRating value={Math.round(stats.averageRating)} />
             <p className="text-sm text-muted-foreground mt-1">
-              {stats.totalReviews} review{stats.totalReviews !== 1 ? 's' : ''}
+              {stats.totalReviews} {stats.totalReviews === 1 ? t('review') : t('reviews')}
             </p>
           </div>
         </div>
@@ -152,25 +153,25 @@ export function ProductReviews({ productId }: ProductReviewsProps) {
           <form onSubmit={handleSubmit} className="mb-6 p-4 border rounded-lg">
             <div className="space-y-4">
               <div>
-                <Label>Rating</Label>
+                <Label>{t('rating')}</Label>
                 <StarRating value={rating} onChange={setRating} />
               </div>
               <div>
-                <Label htmlFor="comment">Your Review</Label>
+                <Label htmlFor="comment">{t('yourReview')}</Label>
                 <textarea
                   id="comment"
                   value={comment}
                   onChange={(e) => setComment(e.target.value)}
                   className="w-full mt-1 p-2 border rounded-md min-h-[100px]"
-                  placeholder="Share your experience with this product..."
+                  placeholder={t('reviewPlaceholder')}
                 />
               </div>
               <div className="flex gap-2">
                 <Button type="submit" disabled={submitting}>
-                  {submitting ? 'Submitting...' : 'Submit Review'}
+                  {submitting ? t('submitting') : t('submitReview')}
                 </Button>
                 <Button type="button" variant="outline" onClick={() => setShowForm(false)}>
-                  Cancel
+                  {t('cancel')}
                 </Button>
               </div>
             </div>
@@ -182,7 +183,7 @@ export function ProductReviews({ productId }: ProductReviewsProps) {
           <div className="mb-6 p-4 bg-muted rounded-lg">
             <div className="flex justify-between items-start mb-2">
               <div>
-                <p className="font-semibold">Your Review</p>
+                <p className="font-semibold">{t('yourReviewTitle')}</p>
                 <StarRating value={userReview.rating} />
               </div>
               <div className="flex gap-2">
@@ -195,10 +196,10 @@ export function ProductReviews({ productId }: ProductReviewsProps) {
                     setShowForm(true)
                   }}
                 >
-                  Edit
+                  {t('edit')}
                 </Button>
                 <Button size="sm" variant="destructive" onClick={handleDelete}>
-                  Delete
+                  {t('delete')}
                 </Button>
               </div>
             </div>
@@ -213,10 +214,10 @@ export function ProductReviews({ productId }: ProductReviewsProps) {
 
         {/* Reviews List */}
         {loading ? (
-          <div className="text-center py-4">Loading reviews...</div>
+          <div className="text-center py-4">{t('loadingReviews')}</div>
         ) : reviews.length === 0 ? (
           <div className="text-center py-4 text-muted-foreground">
-            No reviews yet. Be the first to review!
+            {t('noReviewsYet')}
           </div>
         ) : (
           <div className="space-y-4">

@@ -150,6 +150,7 @@ export default function OrdersPage() {
                                 src={item.product.images[0].url}
                                 alt={item.productName}
                                 fill
+                                sizes="64px"
                                 className="object-cover"
                               />
                             ) : (

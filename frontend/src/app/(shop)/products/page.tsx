@@ -19,7 +19,7 @@ interface ProductsPageData {
 
 export default function ProductsPage() {
   const searchParams = useSearchParams()
-  const { t } = useSettingsStore()
+  const { t, hasHydrated } = useSettingsStore()
   const [data, setData] = useState<ProductsPageData>({
     products: [],
     pagination: { page: 1, limit: 12, total: 0, totalPages: 0 },
@@ -36,6 +36,7 @@ export default function ProductsPage() {
         const minPrice = searchParams.get('minPrice')
         const maxPrice = searchParams.get('maxPrice')
         const search = searchParams.get('search')
+        const discount = searchParams.get('discount')
         const sort = searchParams.get('sort')
         const order = searchParams.get('order')
         const page = searchParams.get('page')
@@ -44,6 +45,7 @@ export default function ProductsPage() {
         if (minPrice) queryParams.set('minPrice', minPrice)
         if (maxPrice) queryParams.set('maxPrice', maxPrice)
         if (search) queryParams.set('search', search)
+        if (discount) queryParams.set('discount', discount)
         if (sort) queryParams.set('sort', sort)
         if (order) queryParams.set('order', order)
         queryParams.set('page', page || '1')
@@ -79,23 +81,25 @@ export default function ProductsPage() {
   const category = searchParams.get('category')
 
   return (
-    <div className="container py-8">
-      <div className="flex flex-col md:flex-row gap-8">
-        {/* Filters Sidebar */}
-        <aside className="w-full md:w-64 flex-shrink-0">
-          <Suspense fallback={<div>{t('loadingFilters')}</div>}>
-            <ProductFilters categories={categories} />
-          </Suspense>
+    <div className="container py-6 px-4 md:py-8">
+      <div className="flex flex-col lg:flex-row gap-6 md:gap-8">
+        {/* Filters Sidebar - Mobile: Collapsible, Desktop: Fixed */}
+        <aside className="w-full lg:w-64 flex-shrink-0">
+          <div className="lg:sticky lg:top-20">
+            <Suspense fallback={<div>{t('loadingFilters')}</div>}>
+              <ProductFilters categories={categories} />
+            </Suspense>
+          </div>
         </aside>
 
         {/* Products Grid */}
-        <div className="flex-1">
+        <div className="flex-1 min-w-0">
           {loading ? (
             <div className="text-center py-8">{t('loading')}</div>
           ) : (
             <>
-              <div className="flex justify-between items-center mb-6">
-                <h1 className="text-2xl font-bold">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 md:mb-6 gap-3">
+                <h1 className="text-xl md:text-2xl font-bold">
                   {search
                     ? `${t('searchResults')}: "${search}"`
                     : category
@@ -116,7 +120,7 @@ export default function ProductsPage() {
                 </div>
               ) : (
                 <>
-                  <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-4 lg:gap-6">
                     {products.map((product) => (
                       <ProductCard key={product.id} product={product} />
                     ))}
@@ -124,11 +128,13 @@ export default function ProductsPage() {
 
                   {/* Pagination */}
                   {totalPages > 1 && (
-                    <div className="flex justify-center gap-2 mt-8">
+                    <div className="flex flex-wrap justify-center gap-2 mt-6 md:mt-8">
                       <Button
                         variant="outline"
+                        size="sm"
                         disabled={currentPage <= 1}
                         asChild={currentPage > 1}
+                        className="h-9"
                       >
                         {currentPage > 1 ? (
                           <Link
@@ -141,7 +147,7 @@ export default function ProductsPage() {
                         )}
                       </Button>
 
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-1 md:gap-2">
                         {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
                           let pageNum: number
                           if (totalPages <= 5) {
@@ -160,6 +166,7 @@ export default function ProductsPage() {
                               variant={currentPage === pageNum ? 'default' : 'outline'}
                               size="icon"
                               asChild={currentPage !== pageNum}
+                              className="h-9 w-9 hidden sm:flex"
                             >
                               {currentPage !== pageNum ? (
                                 <Link
@@ -173,12 +180,18 @@ export default function ProductsPage() {
                             </Button>
                           )
                         })}
+                        {/* Mobile: Show only current page */}
+                        <div className="sm:hidden px-3 py-1.5 text-sm">
+                          {currentPage} / {totalPages}
+                        </div>
                       </div>
 
                       <Button
                         variant="outline"
+                        size="sm"
                         disabled={currentPage >= totalPages}
                         asChild={currentPage < totalPages}
+                        className="h-9"
                       >
                         {currentPage < totalPages ? (
                           <Link

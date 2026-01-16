@@ -25,7 +25,7 @@ export default function ProductPage({ params }: ProductPageProps) {
   const [selectedImage, setSelectedImage] = useState(0)
   const [quantity, setQuantity] = useState(1)
   const [loading, setLoading] = useState(true)
-  const { t } = useSettingsStore()
+  const { t, language } = useSettingsStore()
 
   const addItem = useCartStore((state) => state.addItem)
 
@@ -101,23 +101,24 @@ export default function ProductPage({ params }: ProductPageProps) {
   }
 
   return (
-    <div className="container py-8">
-      <Button variant="ghost" asChild className="mb-8">
+    <div className="container py-6 px-4 md:py-8">
+      <Button variant="ghost" asChild className="mb-6 md:mb-8 -ml-2">
         <Link href="/products">
           <ChevronLeft className="mr-2 h-4 w-4" />
           {t('backToProducts')}
         </Link>
       </Button>
 
-      <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
+      <div className="grid md:grid-cols-2 gap-6 md:gap-8 lg:gap-12">
         {/* Images */}
-        <div className="space-y-4">
+        <div className="space-y-3 md:space-y-4">
           <div className="relative aspect-square overflow-hidden rounded-lg bg-muted">
             {product.images[selectedImage] ? (
               <Image
                 src={product.images[selectedImage].url}
                 alt={product.name}
                 fill
+                sizes="(max-width: 768px) 100vw, 50vw"
                 className="object-cover"
                 priority
               />
@@ -138,18 +139,19 @@ export default function ProductPage({ params }: ProductPageProps) {
           </div>
 
           {product.images.length > 1 && (
-            <div className="flex gap-2 overflow-x-auto">
+            <div className="flex gap-2 overflow-x-auto pb-2">
               {product.images.map((image, idx) => (
                 <button
                   key={image.id}
                   onClick={() => setSelectedImage(idx)}
-                  className={`relative w-20 h-20 flex-shrink-0 rounded-md overflow-hidden border-2 ${selectedImage === idx ? 'border-primary' : 'border-transparent'
+                  className={`relative w-16 h-16 md:w-20 md:h-20 flex-shrink-0 rounded-md overflow-hidden border-2 ${selectedImage === idx ? 'border-primary' : 'border-transparent'
                     }`}
                 >
                   <Image
                     src={image.url}
                     alt={`${product.name} ${idx + 1}`}
                     fill
+                    sizes="(max-width: 768px) 64px, 80px"
                     className="object-cover"
                   />
                 </button>
@@ -159,7 +161,7 @@ export default function ProductPage({ params }: ProductPageProps) {
         </div>
 
         {/* Product Info */}
-        <div className="space-y-6">
+        <div className="space-y-4 md:space-y-6">
           <div>
             <Link
               href={`/products?category=${product.category.slug}`}
@@ -167,11 +169,11 @@ export default function ProductPage({ params }: ProductPageProps) {
             >
               {t(`category.${product.category.slug}` as any) || product.category.name}
             </Link>
-            <h1 className="text-3xl font-bold mt-2">{product.name}</h1>
+            <h1 className="text-2xl md:text-3xl font-bold mt-2">{product.name}</h1>
           </div>
 
-          <div className="flex items-center gap-4">
-            <span className="text-3xl font-bold">{formatPrice(price)}</span>
+          <div className="flex items-center gap-3 md:gap-4">
+            <span className="text-2xl md:text-3xl font-bold">{formatPrice(price)}</span>
             {hasDiscount && (
               <span className="text-xl text-muted-foreground line-through">
                 {formatPrice(comparePrice)}
@@ -183,7 +185,13 @@ export default function ProductPage({ params }: ProductPageProps) {
 
           <div>
             <h3 className="font-semibold mb-2">{t('description')}</h3>
-            <p className="text-muted-foreground">{product.description}</p>
+            <p className="text-muted-foreground">
+              {language === 'uk' && (product as any).descriptionUk
+                ? (product as any).descriptionUk
+                : language === 'ru' && (product as any).descriptionRu
+                  ? (product as any).descriptionRu
+                  : product.description}
+            </p>
           </div>
 
           <div className="flex items-center gap-4">
@@ -205,7 +213,7 @@ export default function ProductPage({ params }: ProductPageProps) {
           <Separator />
 
           <div className="space-y-4">
-            <div className="flex items-center gap-4">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
               <span className="font-semibold">{t('quantity')}:</span>
               <div className="flex items-center gap-2">
                 <Button
@@ -213,32 +221,34 @@ export default function ProductPage({ params }: ProductPageProps) {
                   size="icon"
                   onClick={() => setQuantity((q) => Math.max(1, q - 1))}
                   disabled={quantity <= 1}
+                  className="h-10 w-10"
                 >
                   <Minus className="h-4 w-4" />
                 </Button>
-                <span className="w-12 text-center">{quantity}</span>
+                <span className="w-12 text-center font-medium">{quantity}</span>
                 <Button
                   variant="outline"
                   size="icon"
                   onClick={() => setQuantity((q) => Math.min(product.stock, q + 1))}
                   disabled={quantity >= product.stock}
+                  className="h-10 w-10"
                 >
                   <Plus className="h-4 w-4" />
                 </Button>
               </div>
             </div>
 
-            <div className="flex gap-4">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
               <Button
                 size="lg"
-                className="flex-1"
+                className="h-12 md:h-14 text-base md:text-lg font-semibold sm:flex-1"
                 onClick={handleAddToCart}
                 disabled={product.stock === 0}
               >
-                <ShoppingCart className="mr-2 h-5 w-5" />
+                <ShoppingCart className="mr-2 h-5 w-5 md:h-6 md:w-6" />
                 {t('addToCart')}
               </Button>
-              <FavoriteButton productId={product.id} variant="button" />
+              <FavoriteButton productId={product.id} variant="button" className="h-12 md:h-14 sm:w-12 md:sm:w-14" />
             </div>
           </div>
         </div>

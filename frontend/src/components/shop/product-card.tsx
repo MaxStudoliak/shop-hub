@@ -13,11 +13,12 @@ import { useSettingsStore } from '@/stores/settings.store'
 
 interface ProductCardProps {
   product: Product
+  priority?: boolean
 }
 
-export function ProductCard({ product }: ProductCardProps) {
+export function ProductCard({ product, priority = false }: ProductCardProps) {
   const addItem = useCartStore((state) => state.addItem)
-  const { t, formatPrice } = useSettingsStore()
+  const { t, formatPrice, hasHydrated } = useSettingsStore()
 
   const price = typeof product.price === 'string' ? parseFloat(product.price) : product.price
   const comparePrice = product.comparePrice
@@ -41,25 +42,27 @@ export function ProductCard({ product }: ProductCardProps) {
       stock: product.stock,
     })
     toast({
-      title: t('addedToCartMsg'),
-      description: `${product.name} ${t('addedToCartDesc')}.`,
+      title: hasHydrated ? t('addedToCartMsg') : 'Added to cart',
+      description: `${product.name} ${hasHydrated ? t('addedToCartDesc') : 'added to cart'}.`,
     })
   }
 
   return (
     <Link href={`/product/${product.slug}`}>
-      <Card className="group overflow-hidden h-full hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 border-2 hover:border-purple-200 dark:hover:border-purple-800">
+      <Card className="group overflow-hidden h-full flex flex-col hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 border-2 hover:border-purple-200 dark:hover:border-purple-800">
         <div className="relative aspect-square overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900">
           {product.images[0] ? (
             <Image
               src={product.images[0].url}
               alt={product.name}
               fill
+              sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
+              priority={priority}
               className="object-cover transition-transform duration-500 group-hover:scale-110"
             />
           ) : (
             <div className="w-full h-full bg-gradient-to-br from-purple-100 to-pink-100 dark:from-purple-900 dark:to-pink-900 flex items-center justify-center">
-              <span className="text-muted-foreground">{t('noImage')}</span>
+              <span className="text-muted-foreground">{hasHydrated ? t('noImage') : 'No image'}</span>
             </div>
           )}
           {hasDiscount && (
@@ -69,41 +72,43 @@ export function ProductCard({ product }: ProductCardProps) {
           )}
           {product.stock <= 5 && product.stock > 0 && (
             <Badge className="absolute top-3 right-3 bg-orange-500 hover:bg-orange-600 shadow-lg">
-              {t('lowStock')}
+              {hasHydrated ? t('lowStock') : 'Low stock'}
             </Badge>
           )}
           {product.stock === 0 && (
             <Badge variant="secondary" className="absolute top-3 right-3 shadow-lg">
-              {t('outOfStock')}
+              {hasHydrated ? t('outOfStock') : 'Out of stock'}
             </Badge>
           )}
         </div>
-        <CardContent className="p-5">
-          <p className="text-xs font-semibold text-purple-600 dark:text-purple-400 mb-2 uppercase tracking-wide">
-            {t(`category.${product.category.slug}` as any) || product.category.name}
-          </p>
-          <h3 className="font-bold text-base line-clamp-2 mb-3 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">
-            {product.name}
-          </h3>
+        <CardContent className="p-3 md:p-4 flex-1 flex flex-col justify-between">
+          <div>
+            <p className="text-xs font-semibold text-purple-600 dark:text-purple-400 mb-1 md:mb-2 uppercase tracking-wide">
+              {hasHydrated ? (t(`category.${product.category.slug}` as any) || product.category.name) : product.category.name}
+            </p>
+            <h3 className="font-bold text-sm md:text-base line-clamp-2 min-h-[2rem] md:min-h-[2.5rem] mb-2 md:mb-3 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">
+              {product.name}
+            </h3>
+          </div>
           <div className="flex items-center gap-2">
-            <span className="font-bold text-lg bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-              {formatPrice(price)}
+            <span className="font-bold text-base md:text-lg bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+              {hasHydrated ? formatPrice(price) : `${price.toFixed(2)} ₴`}
             </span>
             {hasDiscount && (
-              <span className="text-sm text-muted-foreground line-through">
-                {formatPrice(comparePrice)}
+              <span className="text-xs md:text-sm text-muted-foreground line-through">
+                {hasHydrated ? formatPrice(comparePrice) : `${comparePrice.toFixed(2)} ₴`}
               </span>
             )}
           </div>
         </CardContent>
-        <CardFooter className="p-5 pt-0">
+        <CardFooter className="p-3 md:p-4 pt-0">
           <Button
-            className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 shadow-md hover:shadow-lg transition-all"
+            className="w-full h-9 md:h-10 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 shadow-md hover:shadow-lg transition-all text-xs md:text-sm"
             onClick={handleAddToCart}
             disabled={product.stock === 0}
           >
-            <ShoppingCart className="mr-2 h-4 w-4" />
-            {t('addToCart')}
+            <ShoppingCart className="mr-1.5 h-4 w-4 flex-shrink-0" />
+            {hasHydrated ? t('addToCart') : 'Add to cart'}
           </Button>
         </CardFooter>
       </Card>

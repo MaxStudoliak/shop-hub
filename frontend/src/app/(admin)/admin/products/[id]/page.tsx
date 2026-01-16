@@ -241,31 +241,38 @@ export default function ProductFormPage({ params }: ProductFormProps) {
 
           <div>
             <Card title={t('pricing')}>
+              <div style={{ marginBottom: 16, padding: 8, background: '#f0f2f5', borderRadius: 4 }}>
+                <small style={{ color: '#666' }}>
+                  💡 {t('priceInUAH') || 'Ціна вказується в гривнях (UAH). Конвертація в інші валюти відбувається автоматично на сайті.'}
+                </small>
+              </div>
               <Form.Item
                 name="price"
-                label={t('price')}
+                label={`${t('price')} (UAH)`}
                 rules={[{ required: true, message: t('pleaseEnterPrice') }]}
               >
                 <InputNumber
-                  prefix="$"
+                  prefix="₴"
                   style={{ width: '100%' }}
                   min={0}
                   precision={2}
+                  placeholder="499.99"
                 />
               </Form.Item>
 
-              <Form.Item name="comparePrice" label={t('compareAtPrice')}>
+              <Form.Item name="comparePrice" label={`${t('compareAtPrice')} (UAH)`}>
                 <InputNumber
-                  prefix="$"
+                  prefix="₴"
                   style={{ width: '100%' }}
                   min={0}
                   precision={2}
+                  placeholder="699.99"
                 />
               </Form.Item>
             </Card>
 
             <Card title={t('inventory')} style={{ marginTop: 24 }}>
-              <Form.Item name="sku" label={t('sku')}>
+              <Form.Item name="sku" label={t('adminSku')}>
                 <Input placeholder={t('enterSku')} />
               </Form.Item>
 

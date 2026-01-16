@@ -1,55 +1,65 @@
-import { create } from 'zustand'
-import { persist } from 'zustand/middleware'
+import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 
 export interface User {
-  id: string
-  email: string
-  name: string
-  phone?: string
-  address?: string
-  city?: string
-  zip?: string
-  country?: string
+    id: string;
+    email: string;
+    name: string;
+    phone?: string;
+    address?: string;
+    city?: string;
+    zip?: string;
+    country?: string;
 }
 
 interface UserStore {
-  user: User | null
-  token: string | null
-  setAuth: (user: User, token: string) => void
-  updateUser: (user: User) => void
-  logout: () => void
-  isAuthenticated: () => boolean
-  getToken: () => string | null
+    user: User | null;
+    token: string | null;
+    hasHydrated: boolean;
+    setHasHydrated: (state: boolean) => void;
+    setAuth: (user: User, token: string) => void;
+    updateUser: (user: User) => void;
+    logout: () => void;
+    isAuthenticated: () => boolean;
+    getToken: () => string | null;
 }
 
 export const useUserStore = create<UserStore>()(
-  persist(
-    (set, get) => ({
-      user: null,
-      token: null,
+    persist(
+        (set, get) => ({
+            user: null,
+            token: null,
+            hasHydrated: false,
 
-      setAuth: (user, token) => {
-        set({ user, token })
-      },
+            setHasHydrated: (state: boolean) => set({ hasHydrated: state }),
 
-      updateUser: (user) => {
-        set({ user })
-      },
+            setAuth: (user, token) => {
+                set({ user, token });
+            },
 
-      logout: () => {
-        set({ user: null, token: null })
-      },
+            updateUser: user => {
+                set({ user });
+            },
 
-      isAuthenticated: () => {
-        return !!get().token
-      },
+            logout: () => {
+                set({ user: null, token: null });
+            },
 
-      getToken: () => {
-        return get().token
-      },
-    }),
-    {
-      name: 'user-storage',
-    }
-  )
-)
+            isAuthenticated: () => {
+                return !!get().token;
+            },
+
+            getToken: () => {
+                return get().token;
+            },
+        }),
+        {
+            name: 'user-storage',
+            onRehydrateStorage: () => state => {
+                if (state) {
+                    state.setHasHydrated(true);
+                }
+            },
+        },
+    ),
+);

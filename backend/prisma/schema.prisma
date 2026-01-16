@@ -57,20 +57,22 @@ model Category {
 }
 
 model Product {
-  id           String        @id @default(uuid())
-  name         String
-  slug         String        @unique
-  description  String
-  price        Decimal       @db.Decimal(10, 2)
-  comparePrice Decimal?      @db.Decimal(10, 2)
-  sku          String?       @unique
-  stock        Int           @default(0)
-  status       ProductStatus @default(ACTIVE)
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
+  id              String        @id @default(uuid())
+  name            String
+  slug            String        @unique
+  description     String
+  descriptionUk   String?
+  descriptionRu   String?
+  price           Decimal       @db.Decimal(10, 2)
+  comparePrice    Decimal?      @db.Decimal(10, 2)
+  sku             String?       @unique
+  stock           Int           @default(0)
+  status          ProductStatus @default(ACTIVE)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
 
-  categoryId   String
-  category     Category      @relation(fields: [categoryId], references: [id])
+  categoryId      String
+  category        Category      @relation(fields: [categoryId], references: [id])
 
   images       ProductImage[]
   orderItems   OrderItem[]

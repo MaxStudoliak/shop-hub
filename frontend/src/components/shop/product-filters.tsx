@@ -8,11 +8,20 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from '@/components/ui/sheet'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { Category } from '@/types'
 import { useSettingsStore } from '@/stores/settings.store'
+import { Checkbox } from '@/components/ui/checkbox'
 
 interface ProductFiltersProps {
   categories: Category[]
@@ -28,6 +37,7 @@ export function ProductFilters({ categories }: ProductFiltersProps) {
   const currentOrder = searchParams.get('order') || 'desc'
   const currentMinPrice = searchParams.get('minPrice') || ''
   const currentMaxPrice = searchParams.get('maxPrice') || ''
+  const currentDiscount = searchParams.get('discount') === 'true'
 
   const updateFilters = (key: string, value: string) => {
     const params = new URLSearchParams(searchParams.toString())
@@ -45,8 +55,85 @@ export function ProductFilters({ categories }: ProductFiltersProps) {
   }
 
   return (
-    <div className="space-y-4 p-4 border rounded-lg bg-background">
-      <h3 className="font-semibold">{t('filters')}</h3>
+    <div className="space-y-4">
+      {/* Mobile: Collapsible Filters */}
+      <div className="lg:hidden">
+        <Sheet>
+          <SheetTrigger asChild>
+            <Button variant="outline" className="w-full">
+              {t('filters')}
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="left" className="w-[280px] sm:w-[320px] overflow-y-auto">
+            <SheetHeader>
+              <SheetTitle>{t('filters')}</SheetTitle>
+              <SheetDescription className="sr-only">
+                Filter products by category, price, and other criteria
+              </SheetDescription>
+            </SheetHeader>
+            <div className="mt-6 space-y-4">
+              <FilterContent
+                categories={categories}
+                currentCategory={currentCategory}
+                currentSort={currentSort}
+                currentOrder={currentOrder}
+                currentMinPrice={currentMinPrice}
+                currentMaxPrice={currentMaxPrice}
+                currentDiscount={currentDiscount}
+                updateFilters={updateFilters}
+                clearFilters={clearFilters}
+                t={t}
+              />
+            </div>
+          </SheetContent>
+        </Sheet>
+      </div>
+
+      {/* Desktop: Always Visible Filters */}
+      <div className="hidden lg:block p-4 border rounded-lg bg-background">
+        <FilterContent
+          categories={categories}
+          currentCategory={currentCategory}
+          currentSort={currentSort}
+          currentOrder={currentOrder}
+          currentMinPrice={currentMinPrice}
+          currentMaxPrice={currentMaxPrice}
+          currentDiscount={currentDiscount}
+          updateFilters={updateFilters}
+          clearFilters={clearFilters}
+          t={t}
+        />
+      </div>
+    </div>
+  )
+}
+
+function FilterContent({
+  categories,
+  currentCategory,
+  currentSort,
+  currentOrder,
+  currentMinPrice,
+  currentMaxPrice,
+  currentDiscount,
+  updateFilters,
+  clearFilters,
+  t,
+}: {
+  categories: Category[]
+  currentCategory: string
+  currentSort: string
+  currentOrder: string
+  currentMinPrice: string
+  currentMaxPrice: string
+  currentDiscount: boolean
+  updateFilters: (key: string, value: string) => void
+  clearFilters: () => void
+  t: any
+}) {
+  return (
+    <div className="space-y-4 p-4 lg:p-0">
+      <h3 className="font-semibold text-base lg:hidden">{t('filters')}</h3>
 
       <div className="space-y-2">
         <Label>{t('category')}</Label>
@@ -54,7 +141,7 @@ export function ProductFilters({ categories }: ProductFiltersProps) {
           value={currentCategory || 'all'}
           onValueChange={(value) => updateFilters('category', value === 'all' ? '' : value)}
         >
-          <SelectTrigger>
+          <SelectTrigger className="h-10">
             <SelectValue placeholder={t('allCategories')} />
           </SelectTrigger>
           <SelectContent>
@@ -74,14 +161,11 @@ export function ProductFilters({ categories }: ProductFiltersProps) {
           value={`${currentSort}-${currentOrder}`}
           onValueChange={(value) => {
             const [sort, order] = value.split('-')
-            const params = new URLSearchParams(searchParams.toString())
-            params.set('sort', sort)
-            params.set('order', order)
-            params.set('page', '1')
-            router.push(`/products?${params.toString()}`)
+            updateFilters('sort', sort)
+            updateFilters('order', order)
           }}
         >
-          <SelectTrigger>
+          <SelectTrigger className="h-10">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -95,6 +179,21 @@ export function ProductFilters({ categories }: ProductFiltersProps) {
         </Select>
       </div>
 
+      <div className="flex items-center space-x-3 p-3 rounded-lg border-2 border-purple-200 dark:border-purple-800 bg-purple-50 dark:bg-purple-950/30 hover:bg-purple-100 dark:hover:bg-purple-950/50 transition-colors">
+        <Checkbox
+          id="discount"
+          checked={currentDiscount}
+          onCheckedChange={(checked) => updateFilters('discount', checked ? 'true' : '')}
+          className="data-[state=checked]:bg-purple-600 data-[state=checked]:border-purple-600"
+        />
+        <label
+          htmlFor="discount"
+          className="text-sm font-medium leading-none cursor-pointer flex-1 select-none"
+        >
+          {t('showOnlyDiscounts')}
+        </label>
+      </div>
+
       <div className="grid grid-cols-2 gap-2">
         <div className="space-y-2">
           <Label>{t('minPrice')}</Label>
@@ -103,6 +202,7 @@ export function ProductFilters({ categories }: ProductFiltersProps) {
             placeholder="0"
             value={currentMinPrice}
             onChange={(e) => updateFilters('minPrice', e.target.value)}
+            className="h-10"
           />
         </div>
         <div className="space-y-2">
@@ -112,11 +212,12 @@ export function ProductFilters({ categories }: ProductFiltersProps) {
             placeholder="999"
             value={currentMaxPrice}
             onChange={(e) => updateFilters('maxPrice', e.target.value)}
+            className="h-10"
           />
         </div>
       </div>
 
-      <Button variant="outline" className="w-full" onClick={clearFilters}>
+      <Button variant="outline" className="w-full h-10" onClick={clearFilters}>
         {t('clearFilters')}
       </Button>
     </div>
