@@ -1,6 +1,7 @@
 'use client'
 export const dynamic = 'force-dynamic';
 
+import { Suspense } from 'react'
 import { useEffect, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
@@ -13,7 +14,7 @@ import { Order } from '@/types'
 import { formatPrice, formatDate } from '@/lib/utils'
 import { useSettingsStore } from '@/stores/settings.store'
 
-export default function CheckoutSuccessPage() {
+function CheckoutSuccessContent() {
   const searchParams = useSearchParams()
   const orderId = searchParams.get('orderId')
   const [order, setOrder] = useState<Order | null>(null)
@@ -157,5 +158,21 @@ export default function CheckoutSuccessPage() {
         </Button>
       </div>
     </div>
+  )
+}
+
+export default function CheckoutSuccessPage() {
+  return (
+    <Suspense fallback={
+      <div className="container py-16 text-center">
+        <div className="animate-pulse">
+          <div className="h-16 w-16 bg-muted rounded-full mx-auto mb-4" />
+          <div className="h-8 w-64 bg-muted rounded mx-auto mb-2" />
+          <div className="h-6 w-48 bg-muted rounded mx-auto" />
+        </div>
+      </div>
+    }>
+      <CheckoutSuccessContent />
+    </Suspense>
   )
 }

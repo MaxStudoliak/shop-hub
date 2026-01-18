@@ -1,8 +1,8 @@
 'use client'
 export const dynamic = 'force-dynamic';
 
-import { useEffect, useState } from 'react'
 import { Suspense } from 'react'
+import { useEffect, useState } from 'react'
 import { ProductCard } from '@/components/shop/product-card'
 import { ProductFilters } from '@/components/shop/product-filters'
 import { Button } from '@/components/ui/button'
@@ -18,7 +18,7 @@ interface ProductsPageData {
   categories: Category[]
 }
 
-export default function ProductsPage() {
+function ProductsContent() {
   const searchParams = useSearchParams()
   const { t, hasHydrated } = useSettingsStore()
   const [data, setData] = useState<ProductsPageData>({
@@ -213,5 +213,17 @@ export default function ProductsPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function ProductsPage() {
+  return (
+    <Suspense fallback={
+      <div className="container py-8 text-center">
+        <div className="animate-pulse">Loading...</div>
+      </div>
+    }>
+      <ProductsContent />
+    </Suspense>
   )
 }
