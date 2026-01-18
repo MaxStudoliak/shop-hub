@@ -162,7 +162,9 @@ export default function OrderDetailPage({ params }: OrderDetailProps) {
             {t(`status${order.status.charAt(0) + order.status.slice(1).toLowerCase()}` as any) || order.status}
           </Tag>
           <Tag color={paymentColors[order.paymentStatus]} style={{ fontSize: 14, padding: '4px 12px' }}>
-            {t(`status${order.paymentStatus.charAt(0) + order.paymentStatus.slice(1).toLowerCase()}` as any) || order.paymentStatus}
+            {order?.paymentStatus
+              ? (t(`status${order.paymentStatus.charAt(0) + order.paymentStatus.slice(1).toLowerCase()}` as any) || order.paymentStatus)
+              : 'Loading...'}
           </Tag>
         </Space>
       </div>
