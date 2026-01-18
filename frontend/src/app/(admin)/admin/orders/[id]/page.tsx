@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import {
@@ -32,11 +32,7 @@ export default function OrderDetailPage({ params }: OrderDetailProps) {
   const [updating, setUpdating] = useState(false)
   const router = useRouter()
 
-  useEffect(() => {
-    fetchOrder()
-  }, [params.id])
-
-  const fetchOrder = async () => {
+  const fetchOrder = useCallback(async () => {
     try {
       const { data } = await adminApi.get(`/orders/${params.id}`)
       setOrder(data)
@@ -46,7 +42,11 @@ export default function OrderDetailPage({ params }: OrderDetailProps) {
     } finally {
       setLoading(false)
     }
-  }
+  }, [params.id, t, router])
+
+  useEffect(() => {
+    fetchOrder()
+  }, [fetchOrder])
 
   const handleStatusChange = async (status: string) => {
     setUpdating(true)
@@ -159,10 +159,10 @@ export default function OrderDetailPage({ params }: OrderDetailProps) {
         </h1>
         <Space>
           <Tag color={statusColors[order.status]} style={{ fontSize: 14, padding: '4px 12px' }}>
-            {t(`status${order.status.charAt(0) + order.status.slice(1).toLowerCase()}`) || order.status}
+            {t(`status${order.status.charAt(0) + order.status.slice(1).toLowerCase()}` as any) || order.status}
           </Tag>
           <Tag color={paymentColors[order.paymentStatus]} style={{ fontSize: 14, padding: '4px 12px' }}>
-            {t(`status${order.paymentStatus.charAt(0) + order.paymentStatus.slice(1).toLowerCase()}`) || order.paymentStatus}
+            {t(`status${order.paymentStatus.charAt(0) + order.paymentStatus.slice(1).toLowerCase()}` as any) || order.paymentStatus}
           </Tag>
         </Space>
       </div>
