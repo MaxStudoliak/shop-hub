@@ -56,59 +56,59 @@ export function ProductCard({ product, priority = false }: ProductCardProps) {
               src={product.images[0].url}
               alt={product.name}
               fill
-              sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
+              sizes="(max-width: 640px) 90vw, (max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
               priority={priority}
               className="object-cover transition-transform duration-500 group-hover:scale-110"
             />
           ) : (
             <div className="w-full h-full bg-gradient-to-br from-purple-100 to-pink-100 dark:from-purple-900 dark:to-pink-900 flex items-center justify-center">
-              <span className="text-muted-foreground">{hasHydrated ? t('noImage') : 'No image'}</span>
+              <span className="text-muted-foreground text-xs sm:text-sm">{hasHydrated ? t('noImage') : 'No image'}</span>
             </div>
           )}
           {hasDiscount && (
-            <Badge variant="destructive" className="absolute top-3 left-3 shadow-lg text-sm px-3 py-1">
+            <Badge variant="destructive" className="absolute top-2 left-2 shadow-lg text-xs px-2 py-0.5 sm:text-sm sm:px-3 sm:py-1">
               -{discountPercent}%
             </Badge>
           )}
           {product.stock <= 5 && product.stock > 0 && (
-            <Badge className="absolute top-3 right-3 bg-orange-500 hover:bg-orange-600 shadow-lg">
+            <Badge className="absolute top-2 right-2 bg-orange-500 hover:bg-orange-600 shadow-lg text-xs px-2 py-0.5">
               {hasHydrated ? t('lowStock') : 'Low stock'}
             </Badge>
           )}
           {product.stock === 0 && (
-            <Badge variant="secondary" className="absolute top-3 right-3 shadow-lg">
+            <Badge variant="secondary" className="absolute top-2 right-2 shadow-lg text-xs px-2 py-0.5">
               {hasHydrated ? t('outOfStock') : 'Out of stock'}
             </Badge>
           )}
         </div>
-        <CardContent className="p-3 md:p-4 flex-1 flex flex-col justify-between">
+        <CardContent className="p-2.5 sm:p-3 md:p-4 flex-1 flex flex-col justify-between">
           <div>
-            <p className="text-xs font-semibold text-purple-600 dark:text-purple-400 mb-1 md:mb-2 uppercase tracking-wide">
+            <p className="text-[10px] sm:text-xs font-semibold text-purple-600 dark:text-purple-400 mb-1 uppercase tracking-wide">
               {hasHydrated ? (t(`category.${product.category.slug}` as any) || product.category.name) : product.category.name}
             </p>
-            <h3 className="font-bold text-sm md:text-base line-clamp-2 min-h-[2rem] md:min-h-[2.5rem] mb-2 md:mb-3 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">
+            <h3 className="font-bold text-xs sm:text-sm md:text-base line-clamp-2 min-h-[2rem] sm:min-h-[2.3rem] md:min-h-[2.5rem] mb-1.5 sm:mb-2 md:mb-3 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors leading-tight">
               {product.name}
             </h3>
           </div>
-          <div className="flex items-center gap-2">
-            <span className="font-bold text-base md:text-lg bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+          <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+            <span className="font-bold text-sm sm:text-base md:text-lg bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent whitespace-nowrap">
               {hasHydrated ? formatPrice(price) : `${price.toFixed(2)} ₴`}
             </span>
             {hasDiscount && (
-              <span className="text-xs md:text-sm text-muted-foreground line-through">
+              <span className="text-[10px] sm:text-xs md:text-sm text-muted-foreground line-through">
                 {hasHydrated ? formatPrice(comparePrice) : `${comparePrice.toFixed(2)} ₴`}
               </span>
             )}
           </div>
         </CardContent>
-        <CardFooter className="p-3 md:p-4 pt-0">
+        <CardFooter className="p-2.5 sm:p-3 md:p-4 pt-0">
           <Button
-            className="w-full h-9 md:h-10 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 shadow-md hover:shadow-lg transition-all text-xs md:text-sm"
+            className="w-full h-8 sm:h-9 md:h-10 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 shadow-md hover:shadow-lg transition-all text-[11px] sm:text-xs md:text-sm px-2 sm:px-3 whitespace-nowrap"
             onClick={handleAddToCart}
             disabled={product.stock === 0}
           >
-            <ShoppingCart className="mr-1.5 h-4 w-4 flex-shrink-0" />
-            {hasHydrated ? t('addToCart') : 'Add to cart'}
+            <ShoppingCart className="mr-1 sm:mr-1.5 h-3.5 w-3.5 sm:h-4 sm:w-4 flex-shrink-0" />
+            <span className="truncate">{hasHydrated ? t('addToCart') : 'Add to cart'}</span>
           </Button>
         </CardFooter>
       </Card>

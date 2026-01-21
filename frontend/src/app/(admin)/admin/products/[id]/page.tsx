@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import {
   Form,
@@ -38,23 +38,16 @@ export default function ProductFormPage({ params }: ProductFormProps) {
   const [imageUrls, setImageUrls] = useState<string[]>([])
   const [uploading, setUploading] = useState(false)
 
-  useEffect(() => {
-    fetchCategories()
-    if (!isNew) {
-      fetchProduct()
-    }
-  }, [isNew, params.id])
-
-  const fetchCategories = async () => {
+  const fetchCategories = useCallback(async () => {
     try {
       const { data } = await adminApi.get('/categories')
       setCategories(data)
     } catch {
       message.error(t('failedToFetch'))
     }
-  }
+  }, [t])
 
-  const fetchProduct = async () => {
+  const fetchProduct = useCallback(async () => {
     try {
       const { data } = await adminApi.get(`/products/${params.id}`)
       form.setFieldsValue({
@@ -74,7 +67,14 @@ export default function ProductFormPage({ params }: ProductFormProps) {
     } finally {
       setLoading(false)
     }
-  }
+  }, [params.id, form, t, router])
+
+  useEffect(() => {
+    fetchCategories()
+    if (!isNew) {
+      fetchProduct()
+    }
+  }, [isNew, fetchCategories, fetchProduct])
 
   const handleUpload = async (options: any) => {
     const { file, onSuccess, onError } = options
@@ -243,7 +243,7 @@ export default function ProductFormPage({ params }: ProductFormProps) {
             <Card title={t('pricing')}>
               <div style={{ marginBottom: 16, padding: 8, background: '#f0f2f5', borderRadius: 4 }}>
                 <small style={{ color: '#666' }}>
-                  💡 {t('priceInUAH') || 'Ціна вказується в гривнях (UAH). Конвертація в інші валюти відбувається автоматично на сайті.'}
+                  💡 Ціна вказується в гривнях (UAH). Конвертація в інші валюти відбувається автоматично на сайті.
                 </small>
               </div>
               <Form.Item
